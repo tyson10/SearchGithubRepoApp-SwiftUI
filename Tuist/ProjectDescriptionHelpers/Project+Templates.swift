@@ -134,6 +134,17 @@ extension Project {
                     resources: $0 == .framework ? ["Targets/\(name)/Resources/**"] : nil,
                     dependencies: dependencies
                 )
+            case .dynamicLibrary, .staticLibrary:
+                target = Target(
+                    name: name,
+                    platform: platform,
+                    product: $0,
+                    bundleId: "io.tuist.\(name)",
+                    infoPlist: .extendingDefault(with: infoPlist),
+                    sources: ["Sources/**"],
+                    resources: nil,
+                    dependencies: dependencies
+                )
             default: return
             }
             targets.append(target)

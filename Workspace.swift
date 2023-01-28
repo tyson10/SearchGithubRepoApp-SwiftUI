@@ -10,6 +10,8 @@ import ProjectDescription
 let workspace = Workspace(
     name: "connect",
     projects: [
-        "App/**"
+        "App/**",
+        "Feature/**",
+        "Core/**"
     ]
 )
