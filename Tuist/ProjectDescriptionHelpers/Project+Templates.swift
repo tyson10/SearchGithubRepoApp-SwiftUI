@@ -73,4 +73,72 @@ extension Project {
         ])
         return [mainTarget, testTarget]
     }
+    
+    public static func feature(name: String,
+                               products: [Product],
+                               dependencies: [TargetDependency]) -> Project {
+        let platform = Platform.iOS
+        let infoPlist: [String: InfoPlist.Value] = [
+            "CFBundleShortVersionString": "1.0",
+            "CFBundleVersion": "1",
+            "UIMainStoryboardFile": "",
+            "UILaunchStoryboardName": "LaunchScreen"
+            ]
+        var targets = [Target]()
+        var schemes = [Scheme]()
+        
+        products.forEach {
+            var target: Target
+            switch $0 {
+            case .app:
+                target = Target(
+                    name: name,
+                    platform: platform,
+                    product: .app,
+                    bundleId: "io.tuist.\(name)",
+                    infoPlist: .extendingDefault(with: infoPlist),
+                    sources: ["Sources/**"],
+                    resources: ["Resources/**"],
+                    dependencies: dependencies
+                )
+            case .unitTests:
+                target = Target(
+                    name: "\(name)Tests",
+                    platform: platform,
+                    product: .unitTests,
+                    bundleId: "io.tuist.\(name)Tests",
+                    infoPlist: .default,
+                    sources: ["Tests/**"],
+                    dependencies: [
+                        .target(name: "\(name)")
+                ])
+            case .uiTests:
+                target = Target(
+                    name: "\(name)UITests",
+                    platform: platform,
+                    product: .unitTests,
+                    bundleId: "io.tuist.\(name)UITests",
+                    infoPlist: .default,
+                    sources: ["UITests/**"],
+                    dependencies: [
+                        .target(name: "\(name)")
+                ])
+            case .framework, .staticFramework:
+                target = Target(
+                    name: name,
+                    platform: platform,
+                    product: $0,
+                    bundleId: "io.tuist.\(name)",
+                    infoPlist: .extendingDefault(with: infoPlist),
+                    sources: ["Sources/**"],
+                    resources: $0 == .framework ? ["Targets/\(name)/Resources/**"] : nil,
+                    dependencies: dependencies
+                )
+            default: return
+            }
+            targets.append(target)
+        }
+        
+        return Project(name: name, targets: targets, schemes: schemes)
+    }
 }
