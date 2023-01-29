@@ -8,7 +8,7 @@
 import ProjectDescription
 
 let workspace = Workspace(
-    name: "connect",
+    name: "SearchGithubRepoAppSwiftUI",
     projects: [
         "App/**",
         "Feature/**",
