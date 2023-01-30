@@ -12,4 +12,5 @@ let project = Project.feature(name: "Search",
                               products: [.staticFramework, .unitTests, .uiTests],
                               dependencies: [
                                 .external(name: "ComposableArchitecture")
-                              ])
+                              ],
+                              includeDemoApp: true)
