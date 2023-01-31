@@ -14,9 +14,11 @@ struct SearchView: View {
     var body: some View {
         NavigationView {
             List(self.recentlyQueries, id: \.self) { query in
-                Section("Recent searches") {
+                Section(content: {
                     Text(query)
-                }
+                }, header: {
+                    RecentSearchesHeaderView()
+                })
             }
             .navigationTitle("Github")
         }
