@@ -13,7 +13,7 @@ import SwiftUI
 struct ToyApp: App {
     var body: some Scene {
         WindowGroup {
-            SearchView(searchQueryStr: .constant(""))
+            SearchView()
         }
     }
 }

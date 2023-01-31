@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SearchView: View {
-    @Binding var searchQueryStr: String
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = []
+    @State private var searchQueryStr: String = ""
     
     var body: some View {
         NavigationView {
@@ -29,7 +29,7 @@ struct SearchView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView(searchQueryStr: .constant(""))
+        SearchView()
     }
 }
 
