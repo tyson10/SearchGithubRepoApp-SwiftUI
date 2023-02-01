@@ -11,6 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.feature(name: "Search",
                               products: [.staticFramework, .unitTests, .uiTests],
                               dependencies: [
+                                .project(target: "Extensions", path: .relativeToRoot("Core/Extensions")),
                                 .external(name: "ComposableArchitecture")
                               ],
                               includeDemoApp: true)
