@@ -18,6 +18,7 @@ struct SearchView: View {
                     Text(query)
                 }, header: {
                     RecentSearchesHeaderView()
+                        .textCase(.none)
                 })
             }
             .navigationTitle("Github")
