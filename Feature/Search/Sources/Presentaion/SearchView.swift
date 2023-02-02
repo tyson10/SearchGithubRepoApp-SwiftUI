@@ -15,13 +15,15 @@ struct SearchView: View {
     
     var body: some View {
         NavigationView {
-            List(self.recentlyQueries, id: \.self) { query in
-                Section(content: {
-                    Text(query)
-                }, header: {
+            List {
+                Section {
+                    ForEach(self.recentlyQueries, id: \.self) {
+                        RecentSearchesContentView(value: $0)
+                    }
+                } header: {
                     RecentSearchesHeaderView()
                         .textCase(.none)
-                })
+                }
             }
             .navigationTitle("Github")
         }
