@@ -15,15 +15,24 @@ struct SearchView: View {
     
     var body: some View {
         NavigationView {
-            Spacer().navigationTitle("Github")
+            List {
+                Section {
+                    // self.recentlyQueries의 Element는 Identifiable을 준수해야 함.
+                    // 기본 상태에선 준수하지 못함.
+                    // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
+                    // 고로, Element는 Hashable이어야 한다.
+                    ForEach(self.$recentlyQueries, id: \.self) {
+                        RecentSearchesContentView(value: $0.wrappedValue)
+                    }
+                } header: {
+                    RecentSearchesHeaderView()
+                        .textCase(.none)
+                }
+            }
+            .navigationTitle("Github")
         }
         .searchable(text: self.$searchQueryStr,
                     prompt: "Search Repositories")
-        .searchSuggestions {
-            ForEach(self.$recentlyQueries, id: \.self) {
-                RecentSearchesContentView(value: $0.wrappedValue)
-            }
-        }
     }
 }
 
