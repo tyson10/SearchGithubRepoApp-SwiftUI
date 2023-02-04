@@ -1,8 +1,8 @@
 //
-//  SceneDelegate.swift
-//  Search
+//  App.swift
+//  Repositories
 //
-//  Created by Taeyoung Son on 2023/01/30.
+//  Created by Taeyoung Son on 2023/02/04.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import SwiftUI
 struct SearchApp: App {
     var body: some Scene {
         WindowGroup {
-            SearchView()
+            RepositoriesView()
         }
     }
 }

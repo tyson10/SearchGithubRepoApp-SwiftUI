@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct RepositoriesView: View {
-    var body: some View {
+public struct RepositoriesView: View {
+    public var body: some View {
         List {
             
         }

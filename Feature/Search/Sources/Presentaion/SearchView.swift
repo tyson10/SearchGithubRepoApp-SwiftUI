@@ -8,6 +8,7 @@
 import SwiftUI
 
 import Extensions
+import Repositories
 
 struct SearchView: View {
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = []
