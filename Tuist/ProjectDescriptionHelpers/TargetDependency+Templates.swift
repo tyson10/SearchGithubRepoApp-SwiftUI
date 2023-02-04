@@ -36,6 +36,10 @@ public extension TargetDependency.Project.Feature {
     static var search: TargetDependency {
         .project(target: "Search", path: .relativeToRoot("Feature/Search"))
     }
+    
+    static var repositories: TargetDependency {
+        .project(target: "Repositories", path: .relativeToRoot("Feature/Repositories"))
+    }
 }
 
 // MARK: - Third Party
