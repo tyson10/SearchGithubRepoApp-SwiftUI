@@ -14,6 +14,7 @@ let project = Project.feature(name: "Repositories",
                                 .Project.Core.api,
                                 .Project.Core.extensions,
                                 .Project.Core.model,
+                                .Project.Common.ui,
                                 .ThirdParty.composableArchitecture
                               ],
                               includeDemoApp: true)
