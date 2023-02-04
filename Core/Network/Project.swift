@@ -8,4 +8,4 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.feature(name: "API", products: [.staticLibrary, .unitTests], dependencies: [])
+let project = Project.feature(name: "Network", products: [.staticLibrary, .unitTests], dependencies: [])
