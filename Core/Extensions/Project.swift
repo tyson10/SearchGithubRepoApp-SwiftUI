@@ -8,4 +8,4 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.feature(name: "Extensions", products: [.dynamicLibrary], dependencies: [])
+let project = Project.feature(name: "Extensions", products: [.staticLibrary], dependencies: [])
