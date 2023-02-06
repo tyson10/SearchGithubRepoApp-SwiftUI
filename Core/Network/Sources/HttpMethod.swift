@@ -1,5 +1,5 @@
 //
-//  HttpMethod.swift
+//  HTTPMethod.swift
 //  Network
 //
 //  Created by Taeyoung Son on 2023/02/05.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum HttpMethod: String {
+enum HTTPMethod: String {
     case get
     case post
     case put

@@ -20,14 +20,14 @@ final public class NetworkService {
         session.invalidateAndCancel()
     }
     
-    func request<T: Codable>(request: URLRequest) -> AnyPublisher<T, NetworkError> {
+    func request(request: URLRequest) -> AnyPublisher<Data, NetworkError> {
         return session.dataTaskPublisher(for: request)
-            .tryMap { data, response -> T in
+            .tryMap { data, response -> Data in
                 guard let httpResponse = response as? HTTPURLResponse,
                       (200...299).contains(httpResponse.statusCode) else {
                     throw NetworkError.invalidRequest
                 }
-                return try JSONDecoder().decode(T.self, from: data)
+                return data
             }
             .mapError { error -> NetworkError in
                 return .unknown(error: error)
