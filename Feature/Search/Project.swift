@@ -12,8 +12,6 @@ let project = Project.feature(name: "Search",
                               products: [.staticFramework, .unitTests, .uiTests],
                               dependencies: [
                                 .Project.Core.network,
-                                .Project.Core.extensions,
-                                .Project.Core.model,
                                 .Project.Feature.repositories,
                                 .ThirdParty.composableArchitecture
                               ],
