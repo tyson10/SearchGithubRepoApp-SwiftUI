@@ -10,6 +10,7 @@ import Foundation
 import Combine
 
 final public class NetworkService {
+    public static let baseUrl = "https://api.github.com"
     private let session: URLSession
     
     init(session: URLSession = .shared) {
