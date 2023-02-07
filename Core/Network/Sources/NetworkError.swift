@@ -9,5 +9,6 @@ import Foundation
 
 public enum NetworkError: Error {
     case invalidRequest
+    case emptyRequest
     case unknown(error: Error)
 }

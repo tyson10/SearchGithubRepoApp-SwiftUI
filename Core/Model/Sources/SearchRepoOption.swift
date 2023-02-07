@@ -13,14 +13,14 @@ public struct SearchRepoOption: Equatable {
     var order: RepoOrderType
     var page: Int
     
-    init(name: String, sort: RepoSortType = .default, order: RepoOrderType = .desc, page: Int = 1) {
+    public init(name: String, sort: RepoSortType = .default, order: RepoOrderType = .desc, page: Int = 1) {
         self.name = name
         self.sort = sort
         self.order = order
         self.page = page
     }
     
-    func toParameters() -> Parameters {
+    public func toParameters() -> Parameters {
         var params = Parameters()
         params["q"] = self.name
         params["per_page"] = 10

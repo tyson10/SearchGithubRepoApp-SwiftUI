@@ -21,7 +21,11 @@ final public class NetworkService {
         session.invalidateAndCancel()
     }
     
-    func request(request: URLRequest) -> AnyPublisher<Data, NetworkError> {
+    func request(endPoint: EndPoint) -> AnyPublisher<Data, NetworkError> {
+        guard let request = endPoint.request else {
+            return Fail(error: NetworkError.emptyRequest).eraseToAnyPublisher()
+        }
+        
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response -> Data in
                 guard let httpResponse = response as? HTTPURLResponse,

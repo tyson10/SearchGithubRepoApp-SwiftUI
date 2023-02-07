@@ -1,5 +1,5 @@
 //
-//  Request.swift
+//  EndPoint.swift
 //  Network
 //
 //  Created by Taeyoung Son on 2023/02/06.
@@ -13,8 +13,7 @@ public enum EndPoint {
     case search(option: SearchRepoOption)
 }
 
-
-extension EndPoint {
+public extension EndPoint {
     var request: URLRequest? {
         guard let url = self.url else { return nil }
         var request = URLRequest(url: url)
@@ -27,29 +26,34 @@ extension EndPoint {
         }
         return request
     }
-    
-    private var url: URL? {
+}
+
+private extension EndPoint {
+    var url: URL? {
         let baseUrl = NetworkService.baseUrl
-        var urlStr: String
         switch self {
-        case.search(_):
-            urlStr = baseUrl.appending("/search/repositories")
+        case.search(let option):
+            var urlComp = URLComponents(string: baseUrl.appending("/search/repositories"))!
+            let queryItemArray = option.toParameters().map {
+                URLQueryItem(name: $0.key, value: .init(describing: $0.value))
+            }
+            urlComp.queryItems = queryItemArray
+            return urlComp.url!
         }
-        return URL(string: urlStr)
     }
     
-    private var method: HTTPMethod {
+    var method: HTTPMethod {
         switch self {
         case .search(_):
             return .get
         }
     }
     
-    private var body: Data? {
+    var body: Data? {
         return nil
     }
     
-    private var headers: [String: String]? {
+    var headers: [String: String]? {
         return nil
     }
 }
