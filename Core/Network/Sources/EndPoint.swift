@@ -10,6 +10,7 @@ import Foundation
 import Model
 
 public enum EndPoint {
+    case image(url: String)
     case search(option: SearchRepoOption)
 }
 
@@ -39,12 +40,14 @@ private extension EndPoint {
             }
             urlComp.queryItems = queryItemArray
             return urlComp.url!
+        case .image(let url):
+            return URL(string: url)
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .search(_):
+        case .search, .image:
             return .get
         }
     }
