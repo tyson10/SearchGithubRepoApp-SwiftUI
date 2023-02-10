@@ -19,8 +19,8 @@ extension TargetDependency {
 
 // MARK: - Core
 public extension TargetDependency.Project.Core {
-    static var api: TargetDependency {
-        .project(target: "API", path: .relativeToRoot("Core/API"))
+    static var network: TargetDependency {
+        .project(target: "Network", path: .relativeToRoot("Core/Network"))
     }
     
     static var extensions: TargetDependency {

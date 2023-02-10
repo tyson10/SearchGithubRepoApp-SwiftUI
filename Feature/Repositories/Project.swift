@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.feature(name: "Repositories",
                               products: [.staticFramework, .unitTests, .uiTests],
                               dependencies: [
-                                .Project.Core.api,
-                                .Project.Core.extensions,
-                                .Project.Core.model,
+                                .Project.Core.network,
                                 .Project.Common.ui,
                                 .ThirdParty.composableArchitecture
                               ],
