@@ -8,8 +8,8 @@
 import SwiftUI
 import Combine
 
-class URLImageLoader: ObservableObject {
-    @Published var image: UIImage?
+public class ImageLoader: ObservableObject {
+    @Published public var image: UIImage?
 
     private let network = NetworkService(session: URLSession.shared)
     private var cancellables = Set<AnyCancellable>()
