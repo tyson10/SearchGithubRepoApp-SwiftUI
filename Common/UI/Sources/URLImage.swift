@@ -13,9 +13,9 @@ public struct URLImage: View {
     
     @StateObject private var imageLoader = ImageLoader()
     
-    private let urlStr: String
+    private var urlStr: String?
     
-    init(url: String) {
+    public init(url: String?) {
         self.urlStr = url
     }
     
