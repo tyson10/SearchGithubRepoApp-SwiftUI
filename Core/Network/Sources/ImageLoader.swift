@@ -18,7 +18,7 @@ public class ImageLoader: ObservableObject {
         self.network = network
     }
 
-    func fetch(urlString: String?) {
+    public func fetch(urlString: String?) {
         guard let urlString = urlString else { return }
         
         network.request(endPoint: .image(url: urlString))
