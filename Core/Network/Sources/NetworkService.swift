@@ -21,7 +21,7 @@ final public class NetworkService {
         session.invalidateAndCancel()
     }
     
-    func request(endPoint: EndPoint) -> AnyPublisher<Data, NetworkError> {
+    public func request(endPoint: EndPoint) -> AnyPublisher<Data, NetworkError> {
         guard let request = endPoint.request else {
             return Fail(error: NetworkError.emptyRequest).eraseToAnyPublisher()
         }
