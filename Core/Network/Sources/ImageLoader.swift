@@ -11,10 +11,14 @@ import Combine
 public class ImageLoader: ObservableObject {
     @Published public var image: UIImage?
 
-    private let network = NetworkService(session: URLSession.shared)
+    private var network: NetworkService
     private var cancellables = Set<AnyCancellable>()
+    
+    public init(network: NetworkService = NetworkService(session: URLSession.shared)) {
+        self.network = network
+    }
 
-    func fetch(urlString: String?) {
+    public func fetch(urlString: String?) {
         guard let urlString = urlString else { return }
         
         network.request(endPoint: .image(url: urlString))
