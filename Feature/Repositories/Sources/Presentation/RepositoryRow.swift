@@ -7,33 +7,33 @@
 
 import SwiftUI
 
+import CommonUI
+
 struct RepositoryRow: View {
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Color(.black)
-                    .frame(width: 20, height: 20)
-                
-                Color(.black)
-                    .frame(maxHeight: 20)
-            }
+            ImageLabel(text: .constant("username"))
             
-            Text("tmap")
+            Text("title")
             
-            Text("R package for maps")
+            Text("description")
+                .lineLimit(2)
             
-            HStack {
-                Color(.black)
-                    .frame(width: 20, height: 20)
+            HStack(spacing: 30) {
+                HStack(spacing: 2) {
+                    Image(systemName: "star")
+                    
+                    Text("659")
+                        .frame(maxHeight: 20)
+                }
                 
-                Text("659")
-                    .frame(maxHeight: 20)
-                
-                Color(.black)
-                    .frame(width: 20, height: 20)
-                
-                Text("R")
-                    .frame(maxHeight: 20)
+                HStack(spacing: 2) {
+                    Image(systemName: "point")
+                        .tint(Color.blue)
+                    
+                    Text("659")
+                        .frame(maxHeight: 20)
+                }
             }
         }
     }
