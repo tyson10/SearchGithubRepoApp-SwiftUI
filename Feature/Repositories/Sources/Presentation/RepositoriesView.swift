@@ -9,7 +9,9 @@ public struct RepositoriesView: View {
     
     public var body: some View {
         List {
-            RepositoryRow()
+            ForEach(state.repositories?.items ?? [], id: \.self) { item in
+                RepositoryRow(repository: item)
+            }
         }
         .onAppear {
             self.state.search(name: "swift")
