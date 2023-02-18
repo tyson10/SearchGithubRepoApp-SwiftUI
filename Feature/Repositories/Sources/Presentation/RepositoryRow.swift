@@ -8,11 +8,19 @@
 import SwiftUI
 
 import CommonUI
+import Model
 
 struct RepositoryRow: View {
+    @State var repository: Repository
+    
+    init(repository: Repository) {
+        self.repository = repository
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            ImageLabel(text: .constant("username"))
+            ImageLabel(imageUrl: .constant(repository.owner.avatarURL),
+                       text: .constant(repository.name))
             
             Text("title")
             
@@ -39,9 +47,9 @@ struct RepositoryRow: View {
     }
 }
 
-struct RepositoryRow_Previews: PreviewProvider {
-    static var previews: some View {
-        RepositoryRow()
-    }
-}
+//struct RepositoryRow_Previews: PreviewProvider {
+//    static var previews: some View {
+////        RepositoryRow(repository: <#Repository#>)
+//    }
+//}
 
