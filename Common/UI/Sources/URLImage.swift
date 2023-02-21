@@ -32,7 +32,9 @@ public struct URLImage: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                
+            } else {
+                ProgressView()
+                    .progressViewStyle(.circular)
             }
         }
     }

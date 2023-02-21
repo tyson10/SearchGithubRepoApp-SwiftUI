@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - Repositories
 public struct Repositories: Codable {
-    let totalCount: Int
-    let incompleteResults: Bool
-    let items: [Repository]
+    public var totalCount: Int
+    public var incompleteResults: Bool
+    public var items: [Repository]
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case totalCount = "total_count"
         case incompleteResults = "incomplete_results"
         case items
@@ -21,24 +21,24 @@ public struct Repositories: Codable {
 }
 
 // MARK: - Item
-public struct Repository: Codable {
-    let name: String
-    let owner: RepositoryOwner
-    let language, description: String?
-    let stargazersCount: Int
+public struct Repository: Codable, Hashable {
+    public let name: String
+    public let owner: RepositoryOwner
+    public let language, description: String?
+    public let stargazersCount: Int
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case name, owner, language, description
         case stargazersCount = "stargazers_count"
     }
 }
 
 // MARK: - Owner
-public struct RepositoryOwner: Codable {
-    let login: String
-    let avatarURL: String
+public struct RepositoryOwner: Codable, Hashable {
+    public let login: String
+    public let avatarURL: String
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case login
         case avatarURL = "avatar_url"
     }

@@ -7,41 +7,49 @@
 
 import SwiftUI
 
+import CommonUI
+import Model
+
 struct RepositoryRow: View {
+    @State var repository: Repository
+    
+    init(repository: Repository) {
+        self.repository = repository
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Color(.black)
-                    .frame(width: 20, height: 20)
-                
-                Color(.black)
-                    .frame(maxHeight: 20)
-            }
+            ImageLabel(imageUrl: .constant(repository.owner.avatarURL),
+                       text: .constant(repository.name))
             
-            Text("tmap")
+            Text("title")
             
-            Text("R package for maps")
+            Text("description")
+                .lineLimit(2)
             
-            HStack {
-                Color(.black)
-                    .frame(width: 20, height: 20)
+            HStack(spacing: 30) {
+                HStack(spacing: 2) {
+                    Image(systemName: "star")
+                    
+                    Text("659")
+                        .frame(maxHeight: 20)
+                }
                 
-                Text("659")
-                    .frame(maxHeight: 20)
-                
-                Color(.black)
-                    .frame(width: 20, height: 20)
-                
-                Text("R")
-                    .frame(maxHeight: 20)
+                HStack(spacing: 2) {
+                    Image(systemName: "point")
+                        .tint(Color.blue)
+                    
+                    Text("659")
+                        .frame(maxHeight: 20)
+                }
             }
         }
     }
 }
 
-struct RepositoryRow_Previews: PreviewProvider {
-    static var previews: some View {
-        RepositoryRow()
-    }
-}
+//struct RepositoryRow_Previews: PreviewProvider {
+//    static var previews: some View {
+////        RepositoryRow(repository: <#Repository#>)
+//    }
+//}
 

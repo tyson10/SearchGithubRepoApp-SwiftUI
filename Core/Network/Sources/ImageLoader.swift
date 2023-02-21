@@ -21,6 +21,11 @@ public class ImageLoader: ObservableObject {
     public func fetch(urlString: String?) {
         guard let urlString = urlString else { return }
         
+        if let image = ImageCache.shared.get(forKey: urlString) {
+            self.image = image
+            return
+        }
+        
         network.request(endPoint: .image(url: urlString))
             .sink { result in
                 switch result {
@@ -31,7 +36,9 @@ public class ImageLoader: ObservableObject {
                 }
             } receiveValue: { [weak self] data in
                 DispatchQueue.main.async {
-                    self?.image = UIImage(data: data)
+                    guard let image = UIImage(data: data) else { return }
+                    self?.image = image
+                    ImageCache.shared.set(forKey: urlString, image: image)
                 }
             }
             .store(in: &cancellables)
