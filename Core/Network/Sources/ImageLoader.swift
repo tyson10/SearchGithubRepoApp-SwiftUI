@@ -8,6 +8,8 @@
 import SwiftUI
 import Combine
 
+import Model
+
 public class ImageLoader: ObservableObject {
     @Published public var image: UIImage?
 
