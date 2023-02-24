@@ -19,8 +19,11 @@ struct RepositoryRow: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ImageLabel(imageUrl: .constant(repository.owner.avatarURL),
-                       text: .constant(repository.name))
+            ImageLabel(
+                imageUrl: .constant(repository.owner.avatarURL),
+                text: .constant(repository.name),
+                imageSize: .constant(.init(width: 20, height: 20))
+            )
             
             Text("title")
             
