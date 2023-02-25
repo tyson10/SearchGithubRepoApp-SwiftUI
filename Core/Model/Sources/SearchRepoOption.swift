@@ -35,7 +35,7 @@ public protocol StringValue {
     var stringValue: String { get }
 }
 
-public enum RepoSortType: String, StringValue, CaseIterable {
+public enum RepoSortType: String, StringValue, CaseIterable, Identifiable {
     case `default`
     case stars, forks
     case helpWantedIssue = "help-wanted-issues"
@@ -52,12 +52,20 @@ public enum RepoSortType: String, StringValue, CaseIterable {
     public var stringValue: String {
         self.rawValue
     }
+    
+    public var id: String {
+        self.rawValue
+    }
 }
 
-public enum RepoOrderType: String, StringValue, CaseIterable {
+public enum RepoOrderType: String, StringValue, CaseIterable, Identifiable {
     case desc, asc
     
     public var stringValue: String {
+        self.rawValue
+    }
+    
+    public var id: String {
         self.rawValue
     }
 }
