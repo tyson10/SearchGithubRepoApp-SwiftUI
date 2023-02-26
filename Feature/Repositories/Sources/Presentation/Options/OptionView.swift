@@ -11,8 +11,15 @@ import Model
 
 public struct OptionView: View {
     public var body: some View {
-        List {
-            
+        List(RepoSortType.allCases) {
+            Text($0.stringValue)
         }
     }
 }
+
+struct OptionView_Previews: PreviewProvider {
+    static var previews: some View {
+        OptionView()
+    }
+}
+
