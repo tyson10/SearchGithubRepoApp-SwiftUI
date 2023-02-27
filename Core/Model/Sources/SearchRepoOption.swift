@@ -31,10 +31,6 @@ public struct SearchRepoOption: Equatable {
     }
 }
 
-public protocol StringValue {
-    var stringValue: String { get }
-}
-
 public protocol SearchOptionType: StringValue, CaseIterable, Identifiable { }
 
 public enum RepoSortType: String, SearchOptionType {
