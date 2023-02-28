@@ -22,7 +22,7 @@ public struct RepositoriesView: View {
                 self.state.onAppear(repoName: self.state.name)
             }
             .navigationTitle(self.state.name)
-            
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
