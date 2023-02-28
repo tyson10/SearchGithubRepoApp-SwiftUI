@@ -23,6 +23,13 @@ public struct RepositoriesView: View {
             }
             .navigationTitle(self.state.name)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                Button(action: {
+                    
+                }, label: {
+                    Image(systemName: "ellipsis.circle")
+                })
+            }
         }
     }
 }
