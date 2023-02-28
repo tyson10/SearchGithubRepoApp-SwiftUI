@@ -5,22 +5,30 @@ import Network
 import Model
 
 public struct RepositoriesView: View {
-    @StateObject private var state = RepositoriesViewState()
+    @StateObject private var state: RepositoriesViewState
+    
+    init(repoName: String) {
+        self._state = .init(wrappedValue: .init(name: repoName))
+    }
     
     public var body: some View {
-        List {
-            ForEach(state.repositories?.items ?? [], id: \.self) { item in
-                RepositoryRow(repository: item)
+        NavigationView {
+            List {
+                ForEach(state.repositories?.items ?? [], id: \.self) { item in
+                    RepositoryRow(repository: item)
+                }
             }
-        }
-        .onAppear {
-            self.state.search(name: "swift")
+            .onAppear {
+                self.state.onAppear(repoName: self.state.name)
+            }
+            .navigationTitle(self.state.name)
+            
         }
     }
 }
 
 struct RepositoriesView_Previews: PreviewProvider {
     static var previews: some View {
-        RepositoriesView()
+        RepositoriesView(repoName: "swift")
     }
 }

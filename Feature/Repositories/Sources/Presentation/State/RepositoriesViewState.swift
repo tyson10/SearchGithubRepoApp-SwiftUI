@@ -13,18 +13,27 @@ import Model
 
 class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
+    @Published var name: String
     
     var subscriptions = Set<AnyCancellable>()
     
     private let networkService: NetworkService
     
-    init(networkService: NetworkService = NetworkService()) {
+    init(networkService: NetworkService = NetworkService(),
+         name: String = "") {
         self.networkService = networkService
+        self.name = name
     }
 }
 
 extension RepositoriesViewState {
-    func search(name: String) {
+    func onAppear(repoName: String) {
+        self.search(name: repoName)
+    }
+}
+
+extension RepositoriesViewState {
+    private func search(name: String) {
         self.networkService.request(endPoint: .search(option: .init(name: name)))
             .decode(type: Repositories.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
