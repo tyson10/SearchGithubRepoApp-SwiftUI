@@ -25,16 +25,16 @@ struct RepositoryRow: View {
                 imageSize: .constant(.init(width: 20, height: 20))
             )
             
-            Text("title")
+            Text(self.repository.name)
             
-            Text("description")
+            Text(self.repository.description ?? "")
                 .lineLimit(2)
             
             HStack(spacing: 30) {
                 HStack(spacing: 2) {
                     Image(systemName: "star")
                     
-                    Text("659")
+                    Text("\(self.repository.stargazersCount)")
                         .frame(maxHeight: 20)
                 }
                 
@@ -42,7 +42,7 @@ struct RepositoryRow: View {
                     Image(systemName: "point")
                         .tint(Color.blue)
                     
-                    Text("659")
+                    Text(self.repository.language ?? "")
                         .frame(maxHeight: 20)
                 }
             }
