@@ -4,6 +4,7 @@ public struct ImageLabel: View {
     @Binding private var imageUrl: String?
     @Binding private var text: String
     @Binding private var imageSize: CGSize
+    @State private var font: Font = .system(size: 15)
     
     public init(
         imageUrl: Binding<String?> = .constant(nil),
@@ -25,7 +26,13 @@ public struct ImageLabel: View {
                 )
             
             Text(self.text)
+                .font(self.font)
         }
+    }
+    
+    public func font(_ font: Font) -> Self {
+        self.font = font
+        return self
     }
 }
 
