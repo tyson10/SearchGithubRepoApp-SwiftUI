@@ -24,11 +24,13 @@ struct RepositoryRow: View {
                 text: .constant(repository.name),
                 imageSize: .constant(.init(width: 20, height: 20))
             )
+            .font(.system(size: 11))
             
             Text(self.repository.name)
             
             Text(self.repository.description ?? "")
                 .lineLimit(2)
+                .font(.system(size: 17))
             
             HStack(spacing: 30) {
                 HStack(spacing: 2) {
@@ -36,6 +38,7 @@ struct RepositoryRow: View {
                     
                     Text("\(self.repository.stargazersCount)")
                         .frame(maxHeight: 20)
+                        .font(.system(size: 12))
                 }
                 
                 HStack(spacing: 2) {
@@ -44,6 +47,7 @@ struct RepositoryRow: View {
                     
                     Text(self.repository.language ?? "")
                         .frame(maxHeight: 20)
+                        .font(.system(size: 12))
                 }
             }
         }
