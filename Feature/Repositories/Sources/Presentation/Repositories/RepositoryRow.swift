@@ -28,6 +28,9 @@ struct RepositoryRow: View {
             
             Text(self.repository.name)
             
+            Spacer()
+                .frame(height: 3)
+            
             Text(self.repository.description ?? "")
                 .lineLimit(2)
                 .font(.system(size: 17))
