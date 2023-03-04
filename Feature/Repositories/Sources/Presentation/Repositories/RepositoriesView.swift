@@ -28,8 +28,18 @@ public struct RepositoriesView: View {
                        label: {
                     Image(systemName: "ellipsis.circle")
                 })
-                .actionSheet(isPresented: self.$state.isSheetPresented,
+                .actionSheet(isPresented: self.$state.isActionSheetPresented,
                              content: self.actionSheet)
+            }
+            .sheet(isPresented: self.$state.isSheetPresented) {
+                switch self.state.searchOption {
+                case .sort:
+                    OptionView(options: RepoSortType.allCases)
+                case .order:
+                    OptionView(options: RepoOrderType.allCases)
+                case .none:
+                    EmptyView()
+                }
             }
         }
     }
@@ -37,14 +47,13 @@ public struct RepositoriesView: View {
     private func actionSheet() -> ActionSheet {
         let title = Text("Search options")
         let sort = ActionSheet.Button.default(Text("Sort")) {
-            
+            self.state.actionSheetBtnTapped(option:.sort)
         }
         let order = ActionSheet.Button.default(Text("Order")) {
-            
+            self.state.actionSheetBtnTapped(option:.order)
         }
-        let cancel = ActionSheet.Button.cancel(Text("Cancel")) {
-            
-        }
+        let cancel = ActionSheet.Button.cancel(Text("Cancel"))
+        
         return .init(title: title, buttons: [sort, order, cancel])
     }
 }

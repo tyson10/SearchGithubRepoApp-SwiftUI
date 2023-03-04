@@ -14,7 +14,9 @@ import Model
 class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
     @Published var name: String
+    @Published var isActionSheetPresented: Bool = false
     @Published var isSheetPresented: Bool = false
+    @Published var searchOption: SearchOption? = nil
     
     var subscriptions = Set<AnyCancellable>()
     
@@ -33,7 +35,12 @@ extension RepositoriesViewState {
     }
     
     func optionBtnTapped() {
-        self.isSheetPresented.toggle()
+        self.isActionSheetPresented.toggle()
+    }
+    
+    func actionSheetBtnTapped(option: SearchOption) {
+        self.searchOption = option
+        self.isSheetPresented = true
     }
 }
 
@@ -48,5 +55,11 @@ extension RepositoriesViewState {
     
     private func setReposiries(with result: Repositories) {
         self.repositories = result
+    }
+}
+
+extension RepositoriesViewState {
+    enum SearchOption {
+        case order, sort
     }
 }
