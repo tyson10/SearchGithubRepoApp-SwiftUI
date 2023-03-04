@@ -34,9 +34,9 @@ public struct RepositoriesView: View {
             .sheet(isPresented: self.$state.isSheetPresented) {
                 switch self.state.searchOption {
                 case .sort:
-                    OptionView(options: RepoSortType.allCases)
+                    OptionView(options: RepoSortType.allCases, isPresented: self.$state.isSheetPresented)
                 case .order:
-                    OptionView(options: RepoOrderType.allCases)
+                    OptionView(options: RepoOrderType.allCases, isPresented: self.$state.isSheetPresented)
                 case .none:
                     EmptyView()
                 }

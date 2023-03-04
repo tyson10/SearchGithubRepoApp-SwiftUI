@@ -11,14 +11,26 @@ import Model
 
 public struct OptionView<T: SearchOptionType>: View {
     @State private var options: [T]
+    @Binding private var isPresented: Bool
     
-    init(options: [T] = []) {
+    init(options: [T] = [],
+         isPresented: Binding<Bool> = .constant(false)) {
         self.options = options
+        self._isPresented = isPresented
     }
     
     public var body: some View {
-        List(self.options) {
-            Text($0.stringValue)
+        NavigationView {
+            List(self.options) {
+                Text($0.stringValue)
+            }
+            .navigationTitle(T.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                Button("Cancel") {
+                    self.isPresented = false
+                }
+            }
         }
     }
 }
