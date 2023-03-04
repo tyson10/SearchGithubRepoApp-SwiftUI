@@ -31,7 +31,7 @@ public struct SearchRepoOption: Equatable {
     }
 }
 
-public protocol SearchOptionType: StringValue, CaseIterable, Identifiable { }
+public protocol SearchOptionType: StringValue, CaseIterable, Identifiable, Titlable { }
 
 public enum RepoSortType: String, SearchOptionType {
     case `default`
@@ -54,6 +54,10 @@ public enum RepoSortType: String, SearchOptionType {
     public var id: String {
         self.rawValue
     }
+    
+    public static var title: String {
+        "Sort"
+    }
 }
 
 public enum RepoOrderType: String, SearchOptionType {
@@ -65,5 +69,9 @@ public enum RepoOrderType: String, SearchOptionType {
     
     public var id: String {
         self.rawValue
+    }
+    
+    public static var title: String {
+        "Order"
     }
 }
