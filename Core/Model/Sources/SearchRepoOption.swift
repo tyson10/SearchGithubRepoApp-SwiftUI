@@ -8,10 +8,10 @@
 import Foundation
 
 public struct SearchRepoOption: Equatable {
-    var name: String
-    var sort: RepoSortType
-    var order: RepoOrderType
-    var page: Int
+    public var name: String
+    public var sort: RepoSortType
+    public var order: RepoOrderType
+    public var page: Int
     
     public init(name: String, sort: RepoSortType = .default, order: RepoOrderType = .desc, page: Int = 1) {
         self.name = name
