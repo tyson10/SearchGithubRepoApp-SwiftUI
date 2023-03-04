@@ -28,16 +28,24 @@ public struct RepositoriesView: View {
                        label: {
                     Image(systemName: "ellipsis.circle")
                 })
-                .actionSheet(isPresented: self.$state.isSheetPresented) {
-                    ActionSheet(title: Text("Search options"),
-                                buttons: [
-                                    .default(Text("Sort")),
-                                    .default(Text("Order")),
-                                    .cancel(Text("Cancel"))
-                                ])
-                }
+                .actionSheet(isPresented: self.$state.isSheetPresented,
+                             content: self.actionSheet)
             }
         }
+    }
+    
+    private func actionSheet() -> ActionSheet {
+        let title = Text("Search options")
+        let sort = ActionSheet.Button.default(Text("Sort")) {
+            
+        }
+        let order = ActionSheet.Button.default(Text("Order")) {
+            
+        }
+        let cancel = ActionSheet.Button.cancel(Text("Cancel")) {
+            
+        }
+        return .init(title: title, buttons: [sort, order, cancel])
     }
 }
 
