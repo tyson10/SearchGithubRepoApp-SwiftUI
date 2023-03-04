@@ -24,11 +24,18 @@ public struct RepositoriesView: View {
             .navigationTitle(self.state.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                Button(action: {
-                    
-                }, label: {
+                Button(action: self.state.optionBtnTapped,
+                       label: {
                     Image(systemName: "ellipsis.circle")
                 })
+                .actionSheet(isPresented: self.$state.isSheetPresented) {
+                    ActionSheet(title: Text("Search options"),
+                                buttons: [
+                                    .default(Text("Sort")),
+                                    .default(Text("Order")),
+                                    .cancel(Text("Cancel"))
+                                ])
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import Model
 class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
     @Published var name: String
+    @Published var isSheetPresented: Bool = false
     
     var subscriptions = Set<AnyCancellable>()
     
@@ -29,6 +30,10 @@ class RepositoriesViewState: ObservableObject {
 extension RepositoriesViewState {
     func onAppear(repoName: String) {
         self.search(name: repoName)
+    }
+    
+    func optionBtnTapped() {
+        self.isSheetPresented.toggle()
     }
 }
 
