@@ -13,7 +13,7 @@ import Model
 
 class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
-    @Published var name: String
+    @Published var option: SearchRepoOption
     @Published var isActionSheetPresented: Bool = false
     @Published var isSheetPresented: Bool = false
     @Published var searchOption: SearchOption? = nil
@@ -23,15 +23,19 @@ class RepositoriesViewState: ObservableObject {
     private let networkService: NetworkService
     
     init(networkService: NetworkService = NetworkService(),
-         name: String = "") {
+         option: SearchRepoOption = .init(name: "")) {
         self.networkService = networkService
-        self.name = name
+        self.option = option
     }
 }
 
 extension RepositoriesViewState {
-    func onAppear(repoName: String) {
-        self.search(name: repoName)
+    func search(option: SearchRepoOption) {
+        self.networkService.request(endPoint: .search(option: option))
+            .decode(type: Repositories.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }, receiveValue: self.setReposiries(with:))
+            .store(in: &subscriptions)
     }
     
     func optionBtnTapped() {
@@ -41,16 +45,6 @@ extension RepositoriesViewState {
     func actionSheetBtnTapped(option: SearchOption) {
         self.searchOption = option
         self.isSheetPresented = true
-    }
-}
-
-extension RepositoriesViewState {
-    private func search(name: String) {
-        self.networkService.request(endPoint: .search(option: .init(name: name)))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }, receiveValue: self.setReposiries(with:))
-            .store(in: &subscriptions)
     }
     
     private func setReposiries(with result: Repositories) {

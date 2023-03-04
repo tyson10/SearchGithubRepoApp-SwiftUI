@@ -8,7 +8,7 @@ public struct RepositoriesView: View {
     @StateObject private var state: RepositoriesViewState
     
     init(repoName: String) {
-        self._state = .init(wrappedValue: .init(name: repoName))
+        self._state = .init(wrappedValue: .init(option: .init(name: repoName)))
     }
     
     public var body: some View {
@@ -19,9 +19,9 @@ public struct RepositoriesView: View {
                 }
             }
             .onAppear {
-                self.state.onAppear(repoName: self.state.name)
+                self.state.search(option: self.state.option)
             }
-            .navigationTitle(self.state.name)
+            .navigationTitle(self.state.option.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 Button(action: self.state.optionBtnTapped,
@@ -34,9 +34,11 @@ public struct RepositoriesView: View {
             .sheet(isPresented: self.$state.isSheetPresented) {
                 switch self.state.searchOption {
                 case .sort:
-                    OptionView(options: RepoSortType.allCases, isPresented: self.$state.isSheetPresented)
+                    OptionView(options: RepoSortType.allCases,
+                               isPresented: self.$state.isSheetPresented)
                 case .order:
-                    OptionView(options: RepoOrderType.allCases, isPresented: self.$state.isSheetPresented)
+                    OptionView(options: RepoOrderType.allCases,
+                               isPresented: self.$state.isSheetPresented)
                 case .none:
                     EmptyView()
                 }
