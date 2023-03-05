@@ -8,10 +8,10 @@
 import Foundation
 
 public struct SearchRepoOption: Equatable {
-    var name: String
-    var sort: RepoSortType
-    var order: RepoOrderType
-    var page: Int
+    public var name: String
+    public var sort: RepoSortType
+    public var order: RepoOrderType
+    public var page: Int
     
     public init(name: String, sort: RepoSortType = .default, order: RepoOrderType = .desc, page: Int = 1) {
         self.name = name
@@ -31,11 +31,9 @@ public struct SearchRepoOption: Equatable {
     }
 }
 
-public protocol StringValue {
-    var stringValue: String { get }
-}
+public protocol SearchOptionType: StringValue, CaseIterable, Identifiable, Titlable { }
 
-public enum RepoSortType: String, StringValue, CaseIterable {
+public enum RepoSortType: String, SearchOptionType {
     case `default`
     case stars, forks
     case helpWantedIssue = "help-wanted-issues"
@@ -52,12 +50,28 @@ public enum RepoSortType: String, StringValue, CaseIterable {
     public var stringValue: String {
         self.rawValue
     }
+    
+    public var id: String {
+        self.rawValue
+    }
+    
+    public static var title: String {
+        "Sort"
+    }
 }
 
-public enum RepoOrderType: String, StringValue, CaseIterable {
+public enum RepoOrderType: String, SearchOptionType {
     case desc, asc
     
     public var stringValue: String {
         self.rawValue
+    }
+    
+    public var id: String {
+        self.rawValue
+    }
+    
+    public static var title: String {
+        "Order"
     }
 }

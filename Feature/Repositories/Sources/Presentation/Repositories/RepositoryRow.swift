@@ -19,28 +19,38 @@ struct RepositoryRow: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ImageLabel(imageUrl: .constant(repository.owner.avatarURL),
-                       text: .constant(repository.name))
+            ImageLabel(
+                imageUrl: .constant(repository.owner.avatarURL),
+                text: .constant(repository.name),
+                imageSize: .constant(.init(width: 20, height: 20))
+            )
+            .font(.system(size: 11))
             
-            Text("title")
+            Text(self.repository.name)
             
-            Text("description")
+            Spacer()
+                .frame(height: 3)
+            
+            Text(self.repository.description ?? "")
                 .lineLimit(2)
+                .font(.system(size: 17))
             
             HStack(spacing: 30) {
                 HStack(spacing: 2) {
                     Image(systemName: "star")
                     
-                    Text("659")
+                    Text("\(self.repository.stargazersCount)")
                         .frame(maxHeight: 20)
+                        .font(.system(size: 12))
                 }
                 
                 HStack(spacing: 2) {
                     Image(systemName: "point")
                         .tint(Color.blue)
                     
-                    Text("659")
+                    Text(self.repository.language ?? "")
                         .frame(maxHeight: 20)
+                        .font(.system(size: 12))
                 }
             }
         }
