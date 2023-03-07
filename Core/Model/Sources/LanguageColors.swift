@@ -28,7 +28,7 @@ public struct LanguageColorValue: Codable {
 
 public class LangColorPalette {
     public static var shared = LangColorPalette()
-    public var colors = LanguageColors()
+    private var colors = LanguageColors()
     
     public func set(colors: LanguageColors) {
         self.colors = colors
