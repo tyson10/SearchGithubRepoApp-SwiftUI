@@ -16,6 +16,11 @@ public struct RepositoriesView: View {
             List {
                 ForEach(state.repositories?.items ?? [], id: \.self) { item in
                     RepositoryRow(repository: item)
+                        .onAppear() {
+                            if self.state.repositories?.items.last == item {
+                                self.lastItemAppeared()
+                            }
+                        }
                 }
             }
             .onAppear {
@@ -57,6 +62,10 @@ public struct RepositoriesView: View {
         let cancel = ActionSheet.Button.cancel(Text("Cancel"))
         
         return .init(title: title, buttons: [sort, order, cancel])
+    }
+    
+    private func lastItemAppeared() {
+        
     }
 }
 
