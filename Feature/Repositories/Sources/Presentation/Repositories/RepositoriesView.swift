@@ -65,7 +65,7 @@ public struct RepositoriesView: View {
     }
     
     private func lastItemAppeared() {
-        
+        self.state.searchNextPage()
     }
 }
 

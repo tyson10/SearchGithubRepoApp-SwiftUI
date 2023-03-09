@@ -38,6 +38,20 @@ extension RepositoriesViewState {
             .store(in: &subscriptions)
     }
     
+    func searchNextPage() {
+        var option = self.option.nextPage()
+        
+        self.networkService.request(endPoint: .search(option: option))
+            .decode(type: Repositories.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in },
+                  receiveValue: { [weak self] in
+                self?.repositories?.items.append(contentsOf: $0.items)
+                self?.option = option
+            })
+            .store(in: &subscriptions)
+    }
+    
     func optionBtnTapped() {
         self.isActionSheetPresented.toggle()
     }
