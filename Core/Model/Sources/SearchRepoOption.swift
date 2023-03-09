@@ -29,6 +29,11 @@ public struct SearchRepoOption: Equatable {
         params["order"] = self.order.rawValue
         return params
     }
+    
+    public mutating func nextPage() -> Self {
+        self.page += 1
+        return self
+    }
 }
 
 public protocol SearchOptionType: StringValue, CaseIterable, Identifiable, Titlable { }
