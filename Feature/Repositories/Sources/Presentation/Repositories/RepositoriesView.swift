@@ -54,10 +54,10 @@ public struct RepositoriesView: View {
     private func actionSheet() -> ActionSheet {
         let title = Text("Search options")
         let sort = ActionSheet.Button.default(Text("Sort")) {
-            self.state.actionSheetBtnTapped(option:.sort)
+            self.state.actionSheetBtnTapped(option: .sort)
         }
         let order = ActionSheet.Button.default(Text("Order")) {
-            self.state.actionSheetBtnTapped(option:.order)
+            self.state.actionSheetBtnTapped(option: .order)
         }
         let cancel = ActionSheet.Button.cancel(Text("Cancel"))
         
