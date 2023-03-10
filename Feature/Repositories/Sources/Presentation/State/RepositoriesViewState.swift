@@ -39,7 +39,7 @@ extension RepositoriesViewState {
     }
     
     func searchNextPage() {
-        var option = self.option.nextPage()
+        let option = self.option.nextPage()
         
         self.networkService.request(endPoint: .search(option: option))
             .decode(type: Repositories.self, decoder: JSONDecoder())
@@ -47,6 +47,34 @@ extension RepositoriesViewState {
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [weak self] in
                 self?.repositories?.items.append(contentsOf: $0.items)
+                self?.option = option
+            })
+            .store(in: &subscriptions)
+    }
+    
+    func orderOptionChanged(with option: RepoOrderType) {
+        let option = self.option.set(order: option)
+        
+        self.networkService.request(endPoint: .search(option: option))
+            .decode(type: Repositories.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in },
+                  receiveValue: { [weak self] in
+                self?.repositories = $0
+                self?.option = option
+            })
+            .store(in: &subscriptions)
+    }
+    
+    func sortOptionChanged(with sort: RepoSortType) {
+        let option = self.option.set(sort: sort)
+        
+        self.networkService.request(endPoint: .search(option: option))
+            .decode(type: Repositories.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in },
+                  receiveValue: { [weak self] in
+                self?.repositories = $0
                 self?.option = option
             })
             .store(in: &subscriptions)
