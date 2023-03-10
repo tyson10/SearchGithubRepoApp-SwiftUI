@@ -40,10 +40,12 @@ public struct RepositoriesView: View {
                 switch self.state.searchOption {
                 case .sort:
                     OptionView(options: RepoSortType.allCases,
-                               isPresented: self.$state.isSheetPresented)
+                               isPresented: self.$state.isSheetPresented,
+                               selectAction: self.state.sortOptionChanged(with:))
                 case .order:
                     OptionView(options: RepoOrderType.allCases,
-                               isPresented: self.$state.isSheetPresented)
+                               isPresented: self.$state.isSheetPresented,
+                               selectAction: self.state.orderOptionChanged(with:))
                 case .none:
                     EmptyView()
                 }
