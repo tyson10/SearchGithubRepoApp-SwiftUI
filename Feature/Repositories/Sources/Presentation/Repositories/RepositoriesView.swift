@@ -16,6 +16,11 @@ public struct RepositoriesView: View {
             List {
                 ForEach(state.repositories?.items ?? [], id: \.self) { item in
                     RepositoryRow(repository: item)
+                        .onAppear() {
+                            if self.state.repositories?.items.last == item {
+                                self.lastItemAppeared()
+                            }
+                        }
                 }
             }
             .onAppear {
@@ -35,10 +40,12 @@ public struct RepositoriesView: View {
                 switch self.state.searchOption {
                 case .sort:
                     OptionView(options: RepoSortType.allCases,
-                               isPresented: self.$state.isSheetPresented)
+                               isPresented: self.$state.isSheetPresented,
+                               selectAction: self.state.sortOptionChanged(with:))
                 case .order:
                     OptionView(options: RepoOrderType.allCases,
-                               isPresented: self.$state.isSheetPresented)
+                               isPresented: self.$state.isSheetPresented,
+                               selectAction: self.state.orderOptionChanged(with:))
                 case .none:
                     EmptyView()
                 }
@@ -49,14 +56,18 @@ public struct RepositoriesView: View {
     private func actionSheet() -> ActionSheet {
         let title = Text("Search options")
         let sort = ActionSheet.Button.default(Text("Sort")) {
-            self.state.actionSheetBtnTapped(option:.sort)
+            self.state.actionSheetBtnTapped(option: .sort)
         }
         let order = ActionSheet.Button.default(Text("Order")) {
-            self.state.actionSheetBtnTapped(option:.order)
+            self.state.actionSheetBtnTapped(option: .order)
         }
         let cancel = ActionSheet.Button.cancel(Text("Cancel"))
         
         return .init(title: title, buttons: [sort, order, cancel])
+    }
+    
+    private func lastItemAppeared() {
+        self.state.searchNextPage()
     }
 }
 

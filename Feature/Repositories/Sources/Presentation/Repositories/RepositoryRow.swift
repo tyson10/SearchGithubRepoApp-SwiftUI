@@ -13,6 +13,8 @@ import Model
 struct RepositoryRow: View {
     @State var repository: Repository
     
+    private let langColorSize: CGFloat = 7
+    
     init(repository: Repository) {
         self.repository = repository
     }
@@ -45,8 +47,9 @@ struct RepositoryRow: View {
                 }
                 
                 HStack(spacing: 2) {
-                    Image(systemName: "point")
-                        .tint(Color.blue)
+                    LangColorPalette.shared.color(language: self.repository.language)?
+                        .frame(width: self.langColorSize, height: self.langColorSize)
+                        .cornerRadius(self.langColorSize/2)
                     
                     Text(self.repository.language ?? "")
                         .frame(maxHeight: 20)

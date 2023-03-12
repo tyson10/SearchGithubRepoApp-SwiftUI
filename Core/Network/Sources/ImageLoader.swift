@@ -34,7 +34,7 @@ public class ImageLoader: ObservableObject {
                 case .failure(let error):
                     print(error)
                 case .finished:
-                    print("success")
+                    break
                 }
             } receiveValue: { [weak self] data in
                 DispatchQueue.main.async {

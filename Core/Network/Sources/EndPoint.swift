@@ -12,6 +12,7 @@ import Model
 public enum EndPoint {
     case image(url: String)
     case search(option: SearchRepoOption)
+    case langColor
 }
 
 public extension EndPoint {
@@ -42,12 +43,14 @@ private extension EndPoint {
             return urlComp.url!
         case .image(let url):
             return URL(string: url)
+        case .langColor:
+            return URL(string: "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json")
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .search, .image:
+        case .search, .image, .langColor:
             return .get
         }
     }
