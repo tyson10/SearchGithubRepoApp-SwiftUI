@@ -52,8 +52,8 @@ extension RepositoriesViewState {
             .store(in: &subscriptions)
     }
     
-    func orderOptionChanged(with option: RepoOrderType) {
-        let option = self.option.set(order: option)
+    func orderOptionChanged(with order: RepoOrderType) {
+        let option = self.option.set(order: order)
         
         self.networkService.request(endPoint: .search(option: option))
             .decode(type: Repositories.self, decoder: JSONDecoder())
