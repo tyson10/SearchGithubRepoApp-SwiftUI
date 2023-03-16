@@ -11,7 +11,7 @@ import Extensions
 import Repositories
 
 struct SearchView: View {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = []
+    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
     @State private var pushActive = false
