@@ -12,43 +12,41 @@ public struct RepositoriesView: View {
     }
     
     public var body: some View {
-        NavigationView {
-            List {
-                ForEach(state.repositories?.items ?? [], id: \.self) { item in
-                    RepositoryRow(repository: item)
-                        .onAppear() {
-                            if self.state.repositories?.items.last == item {
-                                self.lastItemAppeared()
-                            }
+        List {
+            ForEach(state.repositories?.items ?? [], id: \.self) { item in
+                RepositoryRow(repository: item)
+                    .onAppear() {
+                        if self.state.repositories?.items.last == item {
+                            self.lastItemAppeared()
                         }
-                }
+                    }
             }
-            .onAppear {
-                self.state.search(option: self.state.option)
-            }
-            .navigationTitle(self.state.option.name)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                Button(action: self.state.optionBtnTapped,
-                       label: {
-                    Image(systemName: "ellipsis.circle")
-                })
-                .actionSheet(isPresented: self.$state.isActionSheetPresented,
-                             content: self.actionSheet)
-            }
-            .sheet(isPresented: self.$state.isSheetPresented) {
-                switch self.state.searchOption {
-                case .sort:
-                    OptionView(options: RepoSortType.allCases,
-                               isPresented: self.$state.isSheetPresented,
-                               selectAction: self.state.sortOptionChanged(with:))
-                case .order:
-                    OptionView(options: RepoOrderType.allCases,
-                               isPresented: self.$state.isSheetPresented,
-                               selectAction: self.state.orderOptionChanged(with:))
-                case .none:
-                    EmptyView()
-                }
+        }
+        .onAppear {
+            self.state.search(option: self.state.option)
+        }
+        .navigationTitle(self.state.option.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button(action: self.state.optionBtnTapped,
+                   label: {
+                Image(systemName: "ellipsis.circle")
+            })
+            .actionSheet(isPresented: self.$state.isActionSheetPresented,
+                         content: self.actionSheet)
+        }
+        .sheet(isPresented: self.$state.isSheetPresented) {
+            switch self.state.searchOption {
+            case .sort:
+                OptionView(options: RepoSortType.allCases,
+                           isPresented: self.$state.isSheetPresented,
+                           selectAction: self.state.sortOptionChanged(with:))
+            case .order:
+                OptionView(options: RepoOrderType.allCases,
+                           isPresented: self.$state.isSheetPresented,
+                           selectAction: self.state.orderOptionChanged(with:))
+            case .none:
+                EmptyView()
             }
         }
     }
