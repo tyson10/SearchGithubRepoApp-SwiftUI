@@ -7,7 +7,7 @@ import Model
 public struct RepositoriesView: View {
     @StateObject private var state: RepositoriesViewState
     
-    init(repoName: String) {
+    public init(repoName: String) {
         self._state = .init(wrappedValue: .init(option: .init(name: repoName)))
     }
     

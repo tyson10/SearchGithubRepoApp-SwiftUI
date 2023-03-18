@@ -10,4 +10,4 @@ import ProjectDescriptionHelpers
 
 let project = Project.feature(name: "CommonUI",
                               products: [.staticFramework],
-                              dependencies: [])
+                              dependencies: [.Project.Core.network])

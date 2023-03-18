@@ -11,8 +11,6 @@ import ProjectDescriptionHelpers
 let project = Project.feature(name: "Search",
                               products: [.staticFramework, .unitTests, .uiTests],
                               dependencies: [
-                                .Project.Core.network,
-                                .Project.Feature.repositories,
-                                .ThirdParty.composableArchitecture
+                                .Project.Feature.repositories
                               ],
                               includeDemoApp: true)

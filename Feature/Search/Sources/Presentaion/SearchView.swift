@@ -11,33 +11,59 @@ import Extensions
 import Repositories
 
 struct SearchView: View {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = []
+    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
+    @State private var pushActive = false
     
     var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    // self.recentlyQueries의 Element는 Identifiable을 준수해야 함.
-                    // 기본 상태에선 준수하지 못함.
-                    // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
-                    // 고로, Element는 Hashable이어야 한다.
-                    ForEach($matchedQueries, id: \.self) {
-                        RecentSearchesContentView(value: $0.wrappedValue)
+        NavigationStack {
+            NavigationView {
+                List {
+                    Section {
+                        // self.recentlyQueries의 Element는 Identifiable을 준수해야 함.
+                        // 기본 상태에선 준수하지 못함.
+                        // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
+                        // 고로, Element는 Hashable이어야 한다.
+                        ForEach($matchedQueries, id: \.self) {
+                            RecentSearchesContentView(value: $0.wrappedValue,
+                                                      deleteAction: delete(query:))
+                        }
+                    } header: {
+                        RecentSearchesHeaderView()
+                            .textCase(.none)
                     }
-                } header: {
-                    RecentSearchesHeaderView()
-                        .textCase(.none)
                 }
+                .navigationTitle("Github")
             }
-            .navigationTitle("Github")
+            .onAppear {
+                matchedQueries = recentlyQueries.filter { $0.hasPrefix(self.searchQueryStr) }
+            }
+            .searchable(text: $searchQueryStr,
+                        prompt: "Search Repositories")
+            .onChange(of: searchQueryStr) { newValue in
+                matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
+            }
+            .onSubmit(of: .search) {
+                print("search!", self.searchQueryStr)
+                self.pushActive = true
+                self.appendRecentlyQuery(value: self.searchQueryStr)
+            }
+            .navigationDestination(isPresented: self.$pushActive) {
+                RepositoriesView(repoName: self.searchQueryStr)
+            }
         }
-        .searchable(text: $searchQueryStr,
-                    prompt: "Search Repositories")
-        .onChange(of: searchQueryStr) { newValue in
-            matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
-        }
+    }
+    
+    private func delete(query: String) {
+        self.recentlyQueries.removeAll(where: { $0 == query })
+        print(self.recentlyQueries)
+    }
+    
+    private func appendRecentlyQuery(value: String) {
+        self.recentlyQueries.removeAll(where: { $0 == value })
+        self.recentlyQueries.insert(value, at: 0)
+        print(self.recentlyQueries)
     }
 }
 
