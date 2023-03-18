@@ -50,6 +50,7 @@ struct SearchView: View {
                 self.appendRecentlyQuery(value: self.searchQueryStr)
             }
             .navigationDestination(isPresented: self.$pushActive) {
+                // FIXME: View를 외부에서 주입받도록 수정
                 RepositoriesView(repoName: self.searchQueryStr)
             }
         }
