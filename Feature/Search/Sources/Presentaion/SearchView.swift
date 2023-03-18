@@ -36,14 +36,18 @@ struct SearchView: View {
                 }
                 .navigationTitle("Github")
             }
+            .onAppear {
+                matchedQueries = recentlyQueries.filter { $0.hasPrefix(self.searchQueryStr) }
+            }
             .searchable(text: $searchQueryStr,
                         prompt: "Search Repositories")
+            .onChange(of: searchQueryStr) { newValue in
+                matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
+            }
             .onSubmit(of: .search) {
                 print("search!", self.searchQueryStr)
                 self.pushActive = true
-            }
-            .onChange(of: searchQueryStr) { newValue in
-                matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
+                self.appendRecentlyQuery(value: self.searchQueryStr)
             }
             .navigationDestination(isPresented: self.$pushActive) {
                 RepositoriesView(repoName: self.searchQueryStr)
@@ -53,6 +57,12 @@ struct SearchView: View {
     
     private func delete(query: String) {
         self.recentlyQueries.removeAll(where: { $0 == query })
+        print(self.recentlyQueries)
+    }
+    
+    private func appendRecentlyQuery(value: String) {
+        self.recentlyQueries.removeAll(where: { $0 == value })
+        self.recentlyQueries.insert(value, at: 0)
         print(self.recentlyQueries)
     }
 }
