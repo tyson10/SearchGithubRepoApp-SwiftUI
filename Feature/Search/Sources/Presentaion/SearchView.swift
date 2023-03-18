@@ -26,7 +26,8 @@ struct SearchView: View {
                         // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
                         // 고로, Element는 Hashable이어야 한다.
                         ForEach($matchedQueries, id: \.self) {
-                            RecentSearchesContentView(value: $0.wrappedValue)
+                            RecentSearchesContentView(value: $0.wrappedValue,
+                                                      deleteAction: delete(query:))
                         }
                     } header: {
                         RecentSearchesHeaderView()
@@ -48,6 +49,11 @@ struct SearchView: View {
                 RepositoriesView(repoName: self.searchQueryStr)
             }
         }
+    }
+    
+    private func delete(query: String) {
+        self.recentlyQueries.removeAll(where: { $0 == query })
+        print(self.recentlyQueries)
     }
 }
 
