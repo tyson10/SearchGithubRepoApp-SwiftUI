@@ -7,7 +7,7 @@ import CommonUI
 public struct RepositoriesView: View, SearchingViewType {
     @StateObject private var state: RepositoriesViewState
     
-    public init(value repoName: String) {
+    public init(searchWord repoName: String) {
         self._state = .init(wrappedValue: .init(option: .init(name: repoName)))
     }
     
@@ -71,6 +71,6 @@ public struct RepositoriesView: View, SearchingViewType {
 
 struct RepositoriesView_Previews: PreviewProvider {
     static var previews: some View {
-        RepositoriesView(value: "swift")
+        RepositoriesView(searchWord: "swift")
     }
 }

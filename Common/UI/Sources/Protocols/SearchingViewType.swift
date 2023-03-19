@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol SearchingViewType {
-    init(value: String)
+    init(searchWord: String)
 }
