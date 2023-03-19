@@ -1,13 +1,13 @@
 import SwiftUI
 import Combine
 
-import Network
 import Model
+import CommonUI
 
-public struct RepositoriesView: View {
+public struct RepositoriesView: View, SearchingViewType {
     @StateObject private var state: RepositoriesViewState
     
-    public init(repoName: String) {
+    public init(value repoName: String) {
         self._state = .init(wrappedValue: .init(option: .init(name: repoName)))
     }
     
