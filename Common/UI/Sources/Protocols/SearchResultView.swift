@@ -5,8 +5,8 @@
 //  Created by Taeyoung Son on 2023/03/19.
 //
 
-import Foundation
+import SwiftUI
 
-public protocol SearchingViewType {
+public protocol SearchResultView: View {
     init(searchWord: String)
 }

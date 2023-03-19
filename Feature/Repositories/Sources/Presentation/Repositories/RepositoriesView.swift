@@ -4,7 +4,7 @@ import Combine
 import Model
 import CommonUI
 
-public struct RepositoriesView: View, SearchingViewType {
+public struct RepositoriesView: SearchResultView {
     @StateObject private var state: RepositoriesViewState
     
     public init(searchWord repoName: String) {
