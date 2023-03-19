@@ -71,6 +71,6 @@ public struct RepositoriesView: View, SearchingViewType {
 
 struct RepositoriesView_Previews: PreviewProvider {
     static var previews: some View {
-        RepositoriesView(repoName: "swift")
+        RepositoriesView(value: "swift")
     }
 }
