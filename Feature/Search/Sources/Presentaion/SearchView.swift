@@ -8,9 +8,10 @@
 import SwiftUI
 
 import Extensions
+import CommonUI
 import Repositories
 
-struct SearchView<ResultView: View>: View {
+struct SearchView<ResultView: SearchResultView>: View {
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
