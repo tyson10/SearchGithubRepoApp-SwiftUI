@@ -13,7 +13,7 @@ import SwiftUI
 struct SearchApp: App {
     var body: some Scene {
         WindowGroup {
-            RepositoriesView(repoName: "")
+            RepositoriesView(searchWord: "")
         }
     }
 }
