@@ -10,11 +10,13 @@ import SwiftUI
 import Extensions
 import Repositories
 
-struct SearchView: View {
+struct SearchView<ResultView: View>: View {
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
     @State private var pushActive = false
+
+    private var resultViewMaker: ((String) -> ResultView)?
     
     var body: some View {
         NavigationStack {
@@ -51,7 +53,7 @@ struct SearchView: View {
             }
             .navigationDestination(isPresented: self.$pushActive) {
                 // FIXME: View를 외부에서 주입받도록 수정
-                RepositoriesView(searchWord: self.searchQueryStr)
+                self.resultViewMaker?(self.searchQueryStr)
             }
         }
     }
@@ -70,6 +72,6 @@ struct SearchView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView()
+        SearchView<RepositoriesView>()
     }
 }
