@@ -73,6 +73,13 @@ struct SearchView<ResultView: SearchResultView>: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView<RepositoriesView>()
+        SearchView<EmptyView>()
+    }
+}
+
+extension EmptyView: SearchResultView {
+    public init(searchWord: String) {
+        self.init()
+        print("\(searchWord) 검색")
     }
 }
