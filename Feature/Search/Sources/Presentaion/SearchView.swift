@@ -10,7 +10,7 @@ import SwiftUI
 import Extensions
 import CommonUI
 
-struct SearchView<ResultView: SearchResultView>: View {
+public struct SearchView<ResultView: SearchResultView>: View {
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
@@ -18,7 +18,11 @@ struct SearchView<ResultView: SearchResultView>: View {
 
     private var resultViewMaker: ((String) -> ResultView)?
     
-    var body: some View {
+    public init(resultViewMaker: ((String) -> ResultView)? = nil) {
+        self.resultViewMaker = resultViewMaker
+    }
+    
+    public var body: some View {
         NavigationStack {
             NavigationView {
                 List {

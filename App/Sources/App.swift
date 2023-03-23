@@ -6,3 +6,19 @@
 //
 
 import Foundation
+
+import SwiftUI
+
+import Search
+import Repositories
+
+@main
+struct SearchRepoApp: App {
+    var body: some Scene {
+        WindowGroup {
+            SearchView<RepositoriesView>() {
+                .init(searchWord: $0)
+            }
+        }
+    }
+}
