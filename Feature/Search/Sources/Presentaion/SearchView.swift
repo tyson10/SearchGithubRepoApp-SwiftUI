@@ -11,7 +11,11 @@ import Extensions
 import CommonUI
 
 public struct SearchView<ResultView: SearchResultView>: View {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
+    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? [] {
+        didSet {
+            setMatchedQueries(with: searchQueryStr)
+        }
+    }
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
     @State private var pushActive = false
@@ -36,41 +40,43 @@ public struct SearchView<ResultView: SearchResultView>: View {
                                                       deleteAction: delete(query:))
                         }
                     } header: {
-                        RecentSearchesHeaderView()
+                        RecentSearchesHeaderView(clearAction: removeAllQueries)
                             .textCase(.none)
                     }
                 }
                 .navigationTitle("Github")
             }
-            .onAppear {
-                matchedQueries = recentlyQueries.filter { $0.hasPrefix(self.searchQueryStr) }
-            }
             .searchable(text: $searchQueryStr,
                         prompt: "Search Repositories")
-            .onChange(of: searchQueryStr) { newValue in
-                matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
-            }
+            .onChange(of: searchQueryStr,
+                      perform: setMatchedQueries(with:))
             .onSubmit(of: .search) {
-                print("search!", self.searchQueryStr)
-                self.pushActive = true
-                self.appendRecentlyQuery(value: self.searchQueryStr)
+                print("search!", searchQueryStr)
+                pushActive = true
+                appendRecentlyQuery(value: searchQueryStr)
             }
             .navigationDestination(isPresented: self.$pushActive) {
                 // FIXME: View를 외부에서 주입받도록 수정
-                self.resultViewMaker?(self.searchQueryStr)
+                resultViewMaker?(searchQueryStr)
             }
         }
     }
     
     private func delete(query: String) {
-        self.recentlyQueries.removeAll(where: { $0 == query })
-        print(self.recentlyQueries)
+        recentlyQueries.removeAll(where: { $0 == query })
     }
     
     private func appendRecentlyQuery(value: String) {
-        self.recentlyQueries.removeAll(where: { $0 == value })
-        self.recentlyQueries.insert(value, at: 0)
-        print(self.recentlyQueries)
+        recentlyQueries.removeAll(where: { $0 == value })
+        recentlyQueries.insert(value, at: 0)
+    }
+    
+    private func removeAllQueries() {
+        recentlyQueries.removeAll()
+    }
+    
+    private func setMatchedQueries(with query: String) {
+        matchedQueries = recentlyQueries.filter { $0.hasPrefix(query) }
     }
 }
 
