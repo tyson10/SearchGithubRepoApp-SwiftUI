@@ -8,15 +8,25 @@
 import SwiftUI
 
 import Extensions
-import Repositories
+import CommonUI
 
-struct SearchView: View {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? []
+public struct SearchView<ResultView: SearchResultView>: View {
+    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? [] {
+        didSet {
+            setMatchedQueries(with: searchQueryStr)
+        }
+    }
     @State private var searchQueryStr: String = ""
     @State private var matchedQueries: [String] = []
     @State private var pushActive = false
+
+    private var resultViewMaker: ((String) -> ResultView)?
     
-    var body: some View {
+    public init(resultViewMaker: ((String) -> ResultView)? = nil) {
+        self.resultViewMaker = resultViewMaker
+    }
+    
+    public var body: some View {
         NavigationStack {
             NavigationView {
                 List {
@@ -26,50 +36,67 @@ struct SearchView: View {
                         // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
                         // 고로, Element는 Hashable이어야 한다.
                         ForEach($matchedQueries, id: \.self) {
-                            RecentSearchesContentView(value: $0.wrappedValue,
-                                                      deleteAction: delete(query:))
+                            RecentSearchesContentView(
+                                value: $0.wrappedValue,
+                                deleteAction: delete(query:)
+                            )
+                            .onTapGesture(perform: searchAction)
                         }
                     } header: {
-                        RecentSearchesHeaderView()
+                        RecentSearchesHeaderView(clearAction: removeAllQueries)
                             .textCase(.none)
                     }
                 }
                 .navigationTitle("Github")
             }
-            .onAppear {
-                matchedQueries = recentlyQueries.filter { $0.hasPrefix(self.searchQueryStr) }
-            }
             .searchable(text: $searchQueryStr,
                         prompt: "Search Repositories")
-            .onChange(of: searchQueryStr) { newValue in
-                matchedQueries = recentlyQueries.filter { $0.hasPrefix(newValue) }
+            .onAppear {
+                setMatchedQueries(with: "")
             }
-            .onSubmit(of: .search) {
-                print("search!", self.searchQueryStr)
-                self.pushActive = true
-                self.appendRecentlyQuery(value: self.searchQueryStr)
-            }
+            .onChange(of: searchQueryStr,
+                      perform: setMatchedQueries(with:))
+            .onSubmit(of: .search, searchAction)
             .navigationDestination(isPresented: self.$pushActive) {
                 // FIXME: View를 외부에서 주입받도록 수정
-                RepositoriesView(searchWord: self.searchQueryStr)
+                resultViewMaker?(searchQueryStr)
             }
         }
     }
     
+    private func searchAction() {
+        print("search!", searchQueryStr)
+        pushActive = true
+        appendRecentlyQuery(value: searchQueryStr)
+    }
+    
     private func delete(query: String) {
-        self.recentlyQueries.removeAll(where: { $0 == query })
-        print(self.recentlyQueries)
+        recentlyQueries.removeAll(where: { $0 == query })
     }
     
     private func appendRecentlyQuery(value: String) {
-        self.recentlyQueries.removeAll(where: { $0 == value })
-        self.recentlyQueries.insert(value, at: 0)
-        print(self.recentlyQueries)
+        recentlyQueries.removeAll(where: { $0 == value })
+        recentlyQueries.insert(value, at: 0)
+    }
+    
+    private func removeAllQueries() {
+        recentlyQueries.removeAll()
+    }
+    
+    private func setMatchedQueries(with query: String) {
+        matchedQueries = query.isEmpty ? recentlyQueries : recentlyQueries.filter { $0.hasPrefix(query) }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SearchView()
+        SearchView<EmptyView>()
+    }
+}
+
+extension EmptyView: SearchResultView {
+    public init(searchWord: String) {
+        self.init()
+        print("\(searchWord) 검색")
     }
 }

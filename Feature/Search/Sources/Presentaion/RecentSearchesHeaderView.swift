@@ -8,20 +8,23 @@
 import SwiftUI
 
 struct RecentSearchesHeaderView: View {
+    private var clearAction: () -> Void
+    
+    init(clearAction: @escaping () -> Void) {
+        self.clearAction = clearAction
+    }
     
     var body: some View {
         HStack {
             Text("Recent searches")
             Spacer()
-            Button("Clear") {
-                
-            }
+            Button("Clear", action: self.clearAction)
         }
     }
 }
 
 struct RecentSearchesHeaderView_Previews: PreviewProvider {
     static var previews: some View {
-        RecentSearchesHeaderView()
+        RecentSearchesHeaderView(clearAction: {})
     }
 }
