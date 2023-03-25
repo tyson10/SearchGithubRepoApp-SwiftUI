@@ -36,8 +36,11 @@ public struct SearchView<ResultView: SearchResultView>: View {
                         // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
                         // 고로, Element는 Hashable이어야 한다.
                         ForEach($matchedQueries, id: \.self) {
-                            RecentSearchesContentView(value: $0.wrappedValue,
-                                                      deleteAction: delete(query:))
+                            RecentSearchesContentView(
+                                value: $0.wrappedValue,
+                                deleteAction: delete(query:)
+                            )
+                            .onTapGesture(perform: searchAction)
                         }
                     } header: {
                         RecentSearchesHeaderView(clearAction: removeAllQueries)
@@ -53,16 +56,18 @@ public struct SearchView<ResultView: SearchResultView>: View {
             }
             .onChange(of: searchQueryStr,
                       perform: setMatchedQueries(with:))
-            .onSubmit(of: .search) {
-                print("search!", searchQueryStr)
-                pushActive = true
-                appendRecentlyQuery(value: searchQueryStr)
-            }
+            .onSubmit(of: .search, searchAction)
             .navigationDestination(isPresented: self.$pushActive) {
                 // FIXME: View를 외부에서 주입받도록 수정
                 resultViewMaker?(searchQueryStr)
             }
         }
+    }
+    
+    private func searchAction() {
+        print("search!", searchQueryStr)
+        pushActive = true
+        appendRecentlyQuery(value: searchQueryStr)
     }
     
     private func delete(query: String) {
