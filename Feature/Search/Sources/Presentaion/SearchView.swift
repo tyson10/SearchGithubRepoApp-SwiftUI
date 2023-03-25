@@ -48,6 +48,9 @@ public struct SearchView<ResultView: SearchResultView>: View {
             }
             .searchable(text: $searchQueryStr,
                         prompt: "Search Repositories")
+            .onAppear {
+                setMatchedQueries(with: "")
+            }
             .onChange(of: searchQueryStr,
                       perform: setMatchedQueries(with:))
             .onSubmit(of: .search) {
@@ -76,7 +79,7 @@ public struct SearchView<ResultView: SearchResultView>: View {
     }
     
     private func setMatchedQueries(with query: String) {
-        matchedQueries = recentlyQueries.filter { $0.hasPrefix(query) }
+        matchedQueries = query.isEmpty ? recentlyQueries : recentlyQueries.filter { $0.hasPrefix(query) }
     }
 }
 

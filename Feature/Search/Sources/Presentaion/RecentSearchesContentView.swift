@@ -26,6 +26,7 @@ struct RecentSearchesContentView: View {
                 Image(systemName: "xmark")
                     .tint(Color.gray)
             })
+            .buttonStyle(PlainButtonStyle())
         }
         
     }
