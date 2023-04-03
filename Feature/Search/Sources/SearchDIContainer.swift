@@ -17,7 +17,7 @@ public final class SearchDIContainer<ResultView: SearchResultView> {
         self.resultViewMaker = resultViewMaker
     }
     
-    public func makeResultView(with query: String) -> SearchView<ResultView> {
+    public func makeSearchView(with query: String) -> SearchView<ResultView> {
         return .init(resultViewMaker: resultViewMaker)
     }
 }
