@@ -14,11 +14,12 @@ import Repositories
 
 @main
 struct SearchRepoApp: App {
+    private let searchContainer = SearchDIContainer()
+    private let repositoriesContainer = RepositoriesDIContainer()
+    
     var body: some Scene {
         WindowGroup {
-            SearchView<RepositoriesView>() {
-                .init(searchWord: $0)
-            }
+            searchContainer.makeSearchView(resultViewMaker: repositoriesContainer.makeRepositoriesView(with:))
         }
-    }
+    } 
 }
