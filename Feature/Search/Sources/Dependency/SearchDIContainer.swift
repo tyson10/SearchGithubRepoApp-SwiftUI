@@ -12,7 +12,9 @@ import CommonUI
 public final class SearchDIContainer {
     public init() { }
     
-    public func makeSearchView<ResultView: SearchResultView>(resultViewMaker: ((String) -> ResultView)?) -> SearchView<ResultView> {
+    public func makeSearchView<ResultView: SearchResultView>(
+        resultViewMaker: ((String) -> ResultView)?
+    ) -> SearchView<ResultView> {
         return .init(resultViewMaker: resultViewMaker)
     }
 }
