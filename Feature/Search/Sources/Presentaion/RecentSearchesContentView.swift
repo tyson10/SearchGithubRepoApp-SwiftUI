@@ -31,7 +31,7 @@ struct RecentSearchesContentView: View {
         
     }
     
-    func delete() {
+    private func delete() {
         self.deleteAction?(self.value)
     }
 }
