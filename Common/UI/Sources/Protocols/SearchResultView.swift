@@ -8,5 +8,6 @@
 import SwiftUI
 
 public protocol SearchResultView: View {
-    init(searchWord: String)
+    associatedtype T
+    init(networkService: T, searchWord: String)
 }

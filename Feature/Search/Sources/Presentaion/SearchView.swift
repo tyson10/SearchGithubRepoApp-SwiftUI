@@ -9,6 +9,7 @@ import SwiftUI
 
 import Extensions
 import CommonUI
+import Network
 
 public struct SearchView<ResultView: SearchResultView>: View {
     @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? [] {
@@ -104,7 +105,7 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 extension EmptyView: SearchResultView {
-    public init(searchWord: String) {
+    public init(networkService: NetworkService, searchWord: String) {
         self.init()
         print("\(searchWord) 검색")
     }

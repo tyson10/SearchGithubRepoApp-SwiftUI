@@ -11,15 +11,21 @@ import SwiftUI
 
 import Search
 import Repositories
+import Network
 
 @main
 struct SearchRepoApp: App {
+    private let service = NetworkService()
     private let searchContainer = SearchDIContainer()
     private let repositoriesContainer = RepositoriesDIContainer()
     
     var body: some Scene {
+        
         WindowGroup {
-            searchContainer.makeSearchView(resultViewMaker: repositoriesContainer.makeRepositoriesView(with:))
+            searchContainer
+                .makeSearchView(
+                    resultViewMaker: repositoriesContainer.set(networkService: service).makeRepositoriesView(with:)
+                )
         }
     } 
 }
