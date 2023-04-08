@@ -11,30 +11,43 @@ import Combine
 import Network
 import Model
 
-class SearchViewState: ObservableObject {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = []
-    @Published private var searchQueryStr: String = ""
-    @Published private var matchedQueries: [String] = []
+final class SearchViewState: ObservableObject {
+    @AppStorage("RecentlyQueries") var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? [] {
+        didSet {
+            setMatchedQueries(with: searchQueryStr)
+        }
+    }
+    @Published var searchQueryStr: String = ""
+    @Published var matchedQueries: [String] = []
+    @Published var pushActive = false
     
-    private let networkService: NetworkService
-    
-    var subscriptions = Set<AnyCancellable>()
-    
-    init(networkService: NetworkService = NetworkService()) {
-        self.networkService = networkService
+    func search() {
+        print("search!", searchQueryStr)
+        pushActive = true
+        appendRecentlyQuery(value: searchQueryStr)
     }
     
-    func search(name: String) {
-        self.networkService.request(endPoint: .search(option: .init(name: name)))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
-            .sink { completion in
-                print("completion: \(completion)")
-            } receiveValue: { repos in
-                print("repos: \(repos)")
-            }
-            .store(in: &subscriptions)
-        
-        // TODO: subscriptions에 누적되어 메모리 누수 있을것으로 예상되므로 확인 필요
-//        print("count: \(self.subscriptions.count)")
+    func search(query: String) {
+        print("search!", query)
+        self.searchQueryStr = query
+        pushActive = true
+        appendRecentlyQuery(value: query)
+    }
+    
+    func delete(query: String) {
+        recentlyQueries.removeAll(where: { $0 == query })
+    }
+    
+    func appendRecentlyQuery(value: String) {
+        recentlyQueries.removeAll(where: { $0 == value })
+        recentlyQueries.insert(value, at: 0)
+    }
+    
+    func removeAllQueries() {
+        recentlyQueries.removeAll()
+    }
+    
+    func setMatchedQueries(with query: String) {
+        matchedQueries = query.isEmpty ? recentlyQueries : recentlyQueries.filter { $0.hasPrefix(query) }
     }
 }
