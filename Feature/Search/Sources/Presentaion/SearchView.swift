@@ -9,16 +9,10 @@ import SwiftUI
 
 import Extensions
 import CommonUI
+import Network
 
 public struct SearchView<ResultView: SearchResultView>: View {
-    @AppStorage("RecentlyQueries") private var recentlyQueries: [String] = (UserDefaults.standard.array(forKey: "RecentlyQueries") as? [String]) ?? [] {
-        didSet {
-            setMatchedQueries(with: searchQueryStr)
-        }
-    }
-    @State private var searchQueryStr: String = ""
-    @State private var matchedQueries: [String] = []
-    @State private var pushActive = false
+    @StateObject private var state = SearchViewState()
 
     private var resultViewMaker: ((String) -> ResultView)?
     
@@ -35,56 +29,34 @@ public struct SearchView<ResultView: SearchResultView>: View {
                         // 기본 상태에선 준수하지 못함.
                         // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
                         // 고로, Element는 Hashable이어야 한다.
-                        ForEach($matchedQueries, id: \.self) {
+                        ForEach(state.matchedQueries, id: \.self) { query in
                             RecentSearchesContentView(
-                                value: $0.wrappedValue,
-                                deleteAction: delete(query:)
+                                value: query,
+                                deleteAction: state.delete(query:)
                             )
-                            .onTapGesture(perform: searchAction)
+                            .onTapGesture {
+                                state.search(query: query)
+                            }
                         }
                     } header: {
-                        RecentSearchesHeaderView(clearAction: removeAllQueries)
+                        RecentSearchesHeaderView(clearAction: state.removeAllQueries)
                             .textCase(.none)
                     }
                 }
                 .navigationTitle("Github")
             }
-            .searchable(text: $searchQueryStr,
+            .searchable(text: $state.searchQueryStr,
                         prompt: "Search Repositories")
             .onAppear {
-                setMatchedQueries(with: "")
+                state.setMatchedQueries(with: "")
             }
-            .onChange(of: searchQueryStr,
-                      perform: setMatchedQueries(with:))
-            .onSubmit(of: .search, searchAction)
-            .navigationDestination(isPresented: self.$pushActive) {
-                // FIXME: View를 외부에서 주입받도록 수정
-                resultViewMaker?(searchQueryStr)
+            .onChange(of: state.searchQueryStr,
+                      perform: state.setMatchedQueries(with:))
+            .onSubmit(of: .search, state.search)
+            .navigationDestination(isPresented: $state.pushActive) {
+                resultViewMaker?(state.searchQueryStr)
             }
         }
-    }
-    
-    private func searchAction() {
-        print("search!", searchQueryStr)
-        pushActive = true
-        appendRecentlyQuery(value: searchQueryStr)
-    }
-    
-    private func delete(query: String) {
-        recentlyQueries.removeAll(where: { $0 == query })
-    }
-    
-    private func appendRecentlyQuery(value: String) {
-        recentlyQueries.removeAll(where: { $0 == value })
-        recentlyQueries.insert(value, at: 0)
-    }
-    
-    private func removeAllQueries() {
-        recentlyQueries.removeAll()
-    }
-    
-    private func setMatchedQueries(with query: String) {
-        matchedQueries = query.isEmpty ? recentlyQueries : recentlyQueries.filter { $0.hasPrefix(query) }
     }
 }
 
@@ -95,7 +67,7 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 extension EmptyView: SearchResultView {
-    public init(searchWord: String) {
+    public init(networkService: NetworkService, searchWord: String) {
         self.init()
         print("\(searchWord) 검색")
     }

@@ -8,11 +8,19 @@
 import SwiftUI
 
 import CommonUI
+import Network
 
-public final class RepositoriesDIContainer{
+public final class RepositoriesDIContainer {
+    private var networkService: NetworkService = .init()
+    
     public init() { }
     
+    public func set(networkService: NetworkService) -> Self {
+        self.networkService = networkService
+        return self
+    }
+    
     public func makeRepositoriesView(with query: String) -> RepositoriesView {
-        return .init(searchWord: query)
+        return .init(networkService: networkService, searchWord: query)
     }
 }

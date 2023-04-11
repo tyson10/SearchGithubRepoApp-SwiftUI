@@ -3,12 +3,16 @@ import Combine
 
 import Model
 import CommonUI
+import Network
 
 public struct RepositoriesView: SearchResultView {
     @StateObject private var state: RepositoriesViewState
     
-    public init(searchWord repoName: String) {
-        self._state = .init(wrappedValue: .init(option: .init(name: repoName)))
+    public init(networkService: NetworkService, searchWord repoName: String) {
+        self._state =
+            .init(
+                wrappedValue: .init(networkService: networkService, option: .init(name: repoName))
+            )
     }
     
     public var body: some View {
@@ -71,6 +75,6 @@ public struct RepositoriesView: SearchResultView {
 
 struct RepositoriesView_Previews: PreviewProvider {
     static var previews: some View {
-        RepositoriesView(searchWord: "swift")
+        RepositoriesView(networkService: NetworkService(), searchWord: "swift")
     }
 }

@@ -26,7 +26,7 @@ public struct LanguageColorValue: Codable {
     }
 }
 
-public class LangColorPalette {
+public final class LangColorPalette {
     public static var shared = LangColorPalette()
     private var colors = LanguageColors()
     

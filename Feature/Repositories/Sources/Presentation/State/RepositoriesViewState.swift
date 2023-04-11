@@ -11,7 +11,7 @@ import Combine
 import Network
 import Model
 
-class RepositoriesViewState: ObservableObject {
+final class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
     @Published var option: SearchRepoOption
     @Published var isActionSheetPresented: Bool = false

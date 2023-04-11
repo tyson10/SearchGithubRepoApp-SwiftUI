@@ -59,10 +59,3 @@ struct RepositoryRow: View {
         }
     }
 }
-
-//struct RepositoryRow_Previews: PreviewProvider {
-//    static var previews: some View {
-////        RepositoryRow(repository: <#Repository#>)
-//    }
-//}
-
