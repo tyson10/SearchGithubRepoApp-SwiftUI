@@ -48,6 +48,10 @@ public struct SearchRepoOption: Equatable {
 
 public protocol SearchOptionType: StringValue, CaseIterable, Identifiable, Titlable { }
 
+public enum SearchOption {
+    case order, sort
+}
+
 public enum RepoSortType: String, SearchOptionType {
     case `default`
     case stars, forks

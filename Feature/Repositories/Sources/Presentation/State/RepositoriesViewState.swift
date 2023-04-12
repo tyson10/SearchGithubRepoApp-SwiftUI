@@ -93,9 +93,3 @@ extension RepositoriesViewState {
         self.repositories = result
     }
 }
-
-extension RepositoriesViewState {
-    enum SearchOption {
-        case order, sort
-    }
-}
