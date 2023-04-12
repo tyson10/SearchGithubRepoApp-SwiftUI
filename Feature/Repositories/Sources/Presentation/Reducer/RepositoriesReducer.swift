@@ -13,6 +13,7 @@ import Model
 import Network
 
 struct RepositoriesReducer: ReducerProtocol {
+    private let networkService: NetworkService
     
     struct State {
         var repositories: Repositories?
@@ -22,12 +23,28 @@ struct RepositoriesReducer: ReducerProtocol {
         var searchOption: SearchOption? = nil
     }
     
-    
     enum Action {
-        
+        case search(option: SearchRepoOption)
+        case searchNextPage
+        case orderOptionChanged(type: RepoOrderType)
+        case sortOptionChanged(type: RepoSortType)
+        case optionBtnTapped
+        case actionSheetBtnTapped(option: SearchOption)
+        case setReposiries(result: Result<Repositories, Error>)
     }
     
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
-        return .none
+        var task: EffectTask<Action>
+        
+        switch action {
+        case .search(let option):
+            task = self.networkService.request(endPoint: .search(option: option))
+                .decode(type: Repositories.self, decoder: JSONDecoder())
+                .catchToEffect(Action.setReposiries(result:))
+        default:
+            task = .none
+        }
+        
+        return task
     }
 }
