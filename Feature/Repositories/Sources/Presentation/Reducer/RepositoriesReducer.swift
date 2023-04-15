@@ -19,21 +19,21 @@ struct RepositoriesReducer: ReducerProtocol {
     
     struct State {
         var repositories: Repositories?
-        var option: SearchRepoOption
+        var option: SearchOption
         var isActionSheetPresented: Bool = false
         var isSheetPresented: Bool = false
-        var searchOption: SearchOption? = nil
+        var queryParamMenu: QueryParamMenu? = nil
     }
     
     enum Action {
-        case search(option: SearchRepoOption)
+        case search(option: SearchOption)
         case searchNextPage
-        case orderOptionChanged(type: RepoOrderType)
-        case sortOptionChanged(type: RepoSortType)
+        case orderOptionChanged(type: OrderParam)
+        case sortOptionChanged(type: SortParam)
         case optionBtnTapped
-        case actionSheetBtnTapped(option: SearchOption)
+        case actionSheetBtnTapped(option: QueryParamMenu)
         case setReposiries(result: Result<Repositories, Error>)
-        case setReposiriesOption(result: Result<(Repositories, SearchRepoOption), Error>)
+        case setReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
     }
     
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -66,7 +66,7 @@ struct RepositoriesReducer: ReducerProtocol {
             state.isActionSheetPresented.toggle()
             
         case .actionSheetBtnTapped(let option):
-            state.searchOption = option
+            state.queryParamMenu = option
             state.isSheetPresented = true
             
         case .setReposiries(.success(let repositories)):
@@ -85,7 +85,7 @@ struct RepositoriesReducer: ReducerProtocol {
         return task
     }
     
-    private func search(with option: SearchRepoOption) -> AnyPublisher<Repositories, any Error> {
+    private func search(with option: SearchOption) -> AnyPublisher<Repositories, any Error> {
         return self.networkService.request(endPoint: .search(option: option))
             .decode(type: Repositories.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()

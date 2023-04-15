@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct SearchRepoOption: Equatable {
+public struct SearchOption: Equatable {
     public var name: String
-    public var sort: RepoSortType
-    public var order: RepoOrderType
+    public var sort: SortParam
+    public var order: OrderParam
     public var page: Int
     
-    public init(name: String, sort: RepoSortType = .default, order: RepoOrderType = .desc, page: Int = 1) {
+    public init(name: String, sort: SortParam = .default, order: OrderParam = .desc, page: Int = 1) {
         self.name = name
         self.sort = sort
         self.order = order
@@ -35,31 +35,31 @@ public struct SearchRepoOption: Equatable {
         return self
     }
     
-    public mutating func set(order: RepoOrderType) -> Self {
+    public mutating func set(order: OrderParam) -> Self {
         self.order = order
         return self
     }
     
-    public mutating func set(sort: RepoSortType) -> Self {
+    public mutating func set(sort: SortParam) -> Self {
         self.sort = sort
         return self
     }
 }
 
-public protocol SearchOptionType: StringValue, CaseIterable, Identifiable, Titlable { }
+public protocol QueryParamType: StringValue, CaseIterable, Identifiable, Titlable { }
 
-public enum SearchOption {
+public enum QueryParamMenu {
     case order, sort
 }
 
-public enum RepoSortType: String, SearchOptionType {
+public enum SortParam: String, QueryParamType {
     case `default`
     case stars, forks
     case helpWantedIssue = "help-wanted-issues"
     case updated
     
     var paramValue: String? {
-        if self == RepoSortType.`default` {
+        if self == SortParam.`default` {
             return nil
         } else {
             return self.rawValue
@@ -79,7 +79,7 @@ public enum RepoSortType: String, SearchOptionType {
     }
 }
 
-public enum RepoOrderType: String, SearchOptionType {
+public enum OrderParam: String, QueryParamType {
     case desc, asc
     
     public var stringValue: String {

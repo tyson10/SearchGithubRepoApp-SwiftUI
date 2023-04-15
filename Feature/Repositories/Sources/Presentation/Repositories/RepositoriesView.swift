@@ -40,13 +40,13 @@ public struct RepositoriesView: SearchResultView {
                          content: self.actionSheet)
         }
         .sheet(isPresented: self.$state.isSheetPresented) {
-            switch self.state.searchOption {
+            switch self.state.queryParamMenu {
             case .sort:
-                OptionView(options: RepoSortType.allCases,
+                OptionView(options: SortParam.allCases,
                            isPresented: self.$state.isSheetPresented,
                            selectAction: self.state.sortOptionChanged(with:))
             case .order:
-                OptionView(options: RepoOrderType.allCases,
+                OptionView(options: OrderParam.allCases,
                            isPresented: self.$state.isSheetPresented,
                            selectAction: self.state.orderOptionChanged(with:))
             case .none:

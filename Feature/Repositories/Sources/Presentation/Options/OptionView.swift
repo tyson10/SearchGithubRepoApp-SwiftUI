@@ -9,7 +9,7 @@ import SwiftUI
 
 import Model
 
-public struct OptionView<T: SearchOptionType>: View {
+public struct OptionView<T: QueryParamType>: View {
     @State private var options: [T]
     @Binding private var isPresented: Bool
     // 순환 참조 문제 없는지 확인 필요
@@ -46,7 +46,7 @@ public struct OptionView<T: SearchOptionType>: View {
 
 struct OptionView_Previews: PreviewProvider {
     static var previews: some View {
-        OptionView(options: RepoSortType.allCases)
+        OptionView(options: SortParam.allCases)
     }
 }
 

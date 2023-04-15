@@ -11,7 +11,7 @@ import Model
 
 public enum EndPoint {
     case image(url: String)
-    case search(option: SearchRepoOption)
+    case search(option: SearchOption)
     case langColor
 }
 
