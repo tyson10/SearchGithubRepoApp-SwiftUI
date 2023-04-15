@@ -47,17 +47,20 @@ struct RepositoriesReducer: ReducerProtocol {
         case .searchNextPage:
             let option = state.option.nextPage()
             task = self.search(with: option)
-                .catchToEffect(Action.setReposiries(result:))
+                .tryMap({ ($0, option) })
+                .catchToEffect(Action.setReposiriesOption(result:))
             
         case .orderOptionChanged(let order):
             let option = state.option.set(order: order)
             task = self.search(with: option)
-                .catchToEffect(Action.setReposiries(result:))
+                .tryMap({ ($0, option) })
+                .catchToEffect(Action.setReposiriesOption(result:))
             
         case .sortOptionChanged(let sort):
             let option = state.option.set(sort: sort)
             task = self.search(with: option)
-                .catchToEffect(Action.setReposiries(result:))
+                .tryMap({ ($0, option) })
+                .catchToEffect(Action.setReposiriesOption(result:))
             
         case .optionBtnTapped:
             state.isActionSheetPresented.toggle()
