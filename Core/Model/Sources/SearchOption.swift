@@ -48,7 +48,7 @@ public struct SearchOption: Equatable {
 
 public protocol QueryParamType: StringValue, CaseIterable, Identifiable, Titlable { }
 
-public enum QueryParamMenu {
+public enum QueryParamMenu: Equatable {
     case order, sort
 }
 

@@ -17,7 +17,11 @@ import Network
 struct RepositoriesReducer: ReducerProtocol {
     private let networkService: NetworkService
     
-    struct State {
+    public init(network: NetworkService) {
+        self.networkService = network
+    }
+    
+    struct State: Equatable {
         var repositories: Repositories?
         var option: SearchOption
         var isActionSheetPresented: Bool = false
@@ -34,6 +38,7 @@ struct RepositoriesReducer: ReducerProtocol {
         case actionSheetBtnTapped(option: QueryParamMenu)
         case setReposiries(result: Result<Repositories, Error>)
         case setReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
+        case none
     }
     
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -80,6 +85,7 @@ struct RepositoriesReducer: ReducerProtocol {
             
         case .setReposiriesOption(.failure(let error)):
             print(error)
+        default: break
         }
         
         return task

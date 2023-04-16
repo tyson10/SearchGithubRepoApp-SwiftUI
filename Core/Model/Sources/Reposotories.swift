@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Repositories
-public struct Repositories: Codable {
+public struct Repositories: Codable, Equatable {
     public var totalCount: Int
     public var incompleteResults: Bool
     public var items: [Repository]
