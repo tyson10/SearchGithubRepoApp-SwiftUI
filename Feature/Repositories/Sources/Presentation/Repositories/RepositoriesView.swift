@@ -36,8 +36,17 @@ public struct RepositoriesView: SearchResultView {
                    label: {
                 Image(systemName: "ellipsis.circle")
             })
-            .actionSheet(isPresented: self.$state.isActionSheetPresented,
-                         content: self.actionSheet)
+            .confirmationDialog("Search options",
+                                isPresented: self.$state.isActionSheetPresented,
+                                titleVisibility: .visible,
+                                actions: {
+                Button("Sort") {
+                    self.state.actionSheetBtnTapped(option: .sort)
+                }
+                Button("Order") {
+                    self.state.actionSheetBtnTapped(option: .order)
+                }
+            })
         }
         .sheet(isPresented: self.$state.isSheetPresented) {
             switch self.state.queryParamMenu {
@@ -53,19 +62,6 @@ public struct RepositoriesView: SearchResultView {
                 EmptyView()
             }
         }
-    }
-    
-    private func actionSheet() -> ActionSheet {
-        let title = Text("Search options")
-        let sort = ActionSheet.Button.default(Text("Sort")) {
-            self.state.actionSheetBtnTapped(option: .sort)
-        }
-        let order = ActionSheet.Button.default(Text("Order")) {
-            self.state.actionSheetBtnTapped(option: .order)
-        }
-        let cancel = ActionSheet.Button.cancel(Text("Cancel"))
-        
-        return .init(title: title, buttons: [sort, order, cancel])
     }
     
     private func lastItemAppeared() {
