@@ -38,6 +38,7 @@ struct RepositoriesReducer: ReducerProtocol {
         case actionSheetBtnTapped(option: QueryParamMenu)
         case setReposiries(result: Result<Repositories, Error>)
         case setReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
+        case appendReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
         case none
     }
     
@@ -53,7 +54,7 @@ struct RepositoriesReducer: ReducerProtocol {
             let option = state.option.nextPage()
             task = self.search(with: option)
                 .tryMap({ ($0, option) })
-                .catchToEffect(Action.setReposiriesOption(result:))
+                .catchToEffect(Action.appendReposiriesOption(result:))
             
         case .orderOptionChanged(let order):
             let option = state.option.set(order: order)
@@ -84,6 +85,13 @@ struct RepositoriesReducer: ReducerProtocol {
             (state.repositories, state.option) = res
             
         case .setReposiriesOption(.failure(let error)):
+            print(error)
+            
+        case .appendReposiriesOption(.success(let res)):
+            state.repositories?.items.append(contentsOf: res.0.items)
+            state.option = res.1
+            
+        case .appendReposiriesOption(.failure(let error)):
             print(error)
         default: break
         }
