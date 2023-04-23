@@ -13,24 +13,24 @@ import Model
 
 final class RepositoriesViewState: ObservableObject {
     @Published var repositories: Repositories?
-    @Published var option: SearchRepoOption
+    @Published var option: SearchOption
     @Published var isActionSheetPresented: Bool = false
     @Published var isSheetPresented: Bool = false
-    @Published var searchOption: SearchOption? = nil
+    @Published var queryParamMenu: QueryParamMenu? = nil
     
     var subscriptions = Set<AnyCancellable>()
     
     private let networkService: NetworkService
     
     init(networkService: NetworkService = NetworkService(),
-         option: SearchRepoOption = .init(name: "")) {
+         option: SearchOption = .init(name: "")) {
         self.networkService = networkService
         self.option = option
     }
 }
 
 extension RepositoriesViewState {
-    func search(option: SearchRepoOption) {
+    func search(option: SearchOption) {
         self.networkService.request(endPoint: .search(option: option))
             .decode(type: Repositories.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
@@ -52,7 +52,7 @@ extension RepositoriesViewState {
             .store(in: &subscriptions)
     }
     
-    func orderOptionChanged(with order: RepoOrderType) {
+    func orderOptionChanged(with order: OrderParam) {
         let option = self.option.set(order: order)
         
         self.networkService.request(endPoint: .search(option: option))
@@ -66,7 +66,7 @@ extension RepositoriesViewState {
             .store(in: &subscriptions)
     }
     
-    func sortOptionChanged(with sort: RepoSortType) {
+    func sortOptionChanged(with sort: SortParam) {
         let option = self.option.set(sort: sort)
         
         self.networkService.request(endPoint: .search(option: option))
@@ -84,18 +84,12 @@ extension RepositoriesViewState {
         self.isActionSheetPresented.toggle()
     }
     
-    func actionSheetBtnTapped(option: SearchOption) {
-        self.searchOption = option
+    func actionSheetBtnTapped(option: QueryParamMenu) {
+        self.queryParamMenu = option
         self.isSheetPresented = true
     }
     
     private func setReposiries(with result: Repositories) {
         self.repositories = result
-    }
-}
-
-extension RepositoriesViewState {
-    enum SearchOption {
-        case order, sort
     }
 }

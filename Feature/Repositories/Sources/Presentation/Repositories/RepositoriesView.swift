@@ -36,36 +36,32 @@ public struct RepositoriesView: SearchResultView {
                    label: {
                 Image(systemName: "ellipsis.circle")
             })
-            .actionSheet(isPresented: self.$state.isActionSheetPresented,
-                         content: self.actionSheet)
+            .confirmationDialog("Search options",
+                                isPresented: self.$state.isActionSheetPresented,
+                                titleVisibility: .visible,
+                                actions: {
+                Button("Sort") {
+                    self.state.actionSheetBtnTapped(option: .sort)
+                }
+                Button("Order") {
+                    self.state.actionSheetBtnTapped(option: .order)
+                }
+            })
         }
         .sheet(isPresented: self.$state.isSheetPresented) {
-            switch self.state.searchOption {
+            switch self.state.queryParamMenu {
             case .sort:
-                OptionView(options: RepoSortType.allCases,
+                OptionView(options: SortParam.allCases,
                            isPresented: self.$state.isSheetPresented,
                            selectAction: self.state.sortOptionChanged(with:))
             case .order:
-                OptionView(options: RepoOrderType.allCases,
+                OptionView(options: OrderParam.allCases,
                            isPresented: self.$state.isSheetPresented,
                            selectAction: self.state.orderOptionChanged(with:))
             case .none:
                 EmptyView()
             }
         }
-    }
-    
-    private func actionSheet() -> ActionSheet {
-        let title = Text("Search options")
-        let sort = ActionSheet.Button.default(Text("Sort")) {
-            self.state.actionSheetBtnTapped(option: .sort)
-        }
-        let order = ActionSheet.Button.default(Text("Order")) {
-            self.state.actionSheetBtnTapped(option: .order)
-        }
-        let cancel = ActionSheet.Button.cancel(Text("Cancel"))
-        
-        return .init(title: title, buttons: [sort, order, cancel])
     }
     
     private func lastItemAppeared() {
