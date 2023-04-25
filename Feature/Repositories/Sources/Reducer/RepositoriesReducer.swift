@@ -87,6 +87,7 @@ struct RepositoriesReducer: ReducerProtocol {
             
         case .setReposiriesOption(.success(let res)):
             (state.repositories, state.option) = res
+            state.isSheetPresented = false
             
         case .setReposiriesOption(.failure(let error)):
             print(error)
