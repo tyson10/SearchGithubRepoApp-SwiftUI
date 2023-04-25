@@ -48,24 +48,28 @@ struct RepositoriesReducer: ReducerProtocol {
         switch action {
         case .search(let option):
             task = self.search(with: option)
+                .receive(on: DispatchQueue.main)
                 .catchToEffect(Action.setReposiries(result:))
             
         case .searchNextPage:
             let option = state.option.nextPage()
             task = self.search(with: option)
                 .tryMap({ ($0, option) })
+                .receive(on: DispatchQueue.main)
                 .catchToEffect(Action.appendReposiriesOption(result:))
             
         case .orderOptionChanged(let order):
             let option = state.option.set(order: order)
             task = self.search(with: option)
                 .tryMap({ ($0, option) })
+                .receive(on: DispatchQueue.main)
                 .catchToEffect(Action.setReposiriesOption(result:))
             
         case .sortOptionChanged(let sort):
             let option = state.option.set(sort: sort)
             task = self.search(with: option)
                 .tryMap({ ($0, option) })
+                .receive(on: DispatchQueue.main)
                 .catchToEffect(Action.setReposiriesOption(result:))
             
         case .optionBtnTapped:
