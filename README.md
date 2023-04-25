@@ -20,3 +20,6 @@
 ## 💥 Trouble Shooting
 ### Main thread checker에 의한 경고 발생
 `The "Store" class is not thread-safe, and so all interactions with an instance of "Store" (including all of its scopes and derived view stores) must be done on the main thread.`
+
+## 참고 자료
+- [ComposableArchitecture Docs](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture)
