@@ -16,3 +16,7 @@
 - Combine
 - [Tuist](https://tuist.io)
 - [The Composable Architecture](https://github.com/pointfreeco/swift-composable-architecture)
+
+## 💥 Trouble Shooting
+### Main thread checker에 의한 경고 발생
+`The "Store" class is not thread-safe, and so all interactions with an instance of "Store" (including all of its scopes and derived view stores) must be done on the main thread.`
