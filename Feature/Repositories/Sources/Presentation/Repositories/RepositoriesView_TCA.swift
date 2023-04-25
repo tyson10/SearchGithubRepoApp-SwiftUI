@@ -49,6 +49,7 @@ public struct RepositoriesView_TCA: SearchResultView {
                 })
                 .confirmationDialog("Search options",
                                     isPresented: viewStore.binding(get: \.isActionSheetPresented, send: .optionBtnTapped),
+                                    titleVisibility: .visible,
                                     actions: {
                     Button("Sort") {
                         viewStore.send(.actionSheetBtnTapped(option: .sort))
@@ -56,7 +57,6 @@ public struct RepositoriesView_TCA: SearchResultView {
                     Button("Order") {
                         viewStore.send(.actionSheetBtnTapped(option: .order))
                     }
-                    Button("Cancel") { }
                 })
 //                .actionSheet(isPresented: viewStore.binding(get: \.isActionSheetPresented, send: .optionBtnTapped),
 //                             content: EmptyView())
