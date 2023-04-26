@@ -48,7 +48,7 @@ struct RepositoriesReducer: ReducerProtocol {
         switch action {
         case .search(let option):
             task = .publisher { // EffectTask를 생성하는 3가지 방법중 하나.
-                self.search(with: option)
+                search(with: option)
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.setRepos)
                     .assertNoFailure() // Failure가 Never여야 하므로 사용, 에러 처리에 대한 공부 필요.
@@ -58,7 +58,7 @@ struct RepositoriesReducer: ReducerProtocol {
             let option = state.option.nextPage()
             
             task = .publisher {
-                self.search(with: option)
+                search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.append(repos:option:))
@@ -69,7 +69,7 @@ struct RepositoriesReducer: ReducerProtocol {
             let option = state.option.set(order: order)
             
             task = .publisher {
-                self.search(with: option)
+                search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
@@ -80,7 +80,7 @@ struct RepositoriesReducer: ReducerProtocol {
             let option = state.option.set(sort: sort)
             
             task = .publisher {
-                self.search(with: option)
+                search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
