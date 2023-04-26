@@ -36,7 +36,7 @@ struct RepositoriesReducer: ReducerProtocol {
         case sortOptionChanged(type: SortParam)
         case optionBtnTapped
         case actionSheetBtnTapped(option: QueryParamMenu)
-        case setReposiries(result: Result<Repositories, Error>)
+        case setRepositories(Repositories)
         case setReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
         case appendReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
         case none
@@ -47,9 +47,12 @@ struct RepositoriesReducer: ReducerProtocol {
         
         switch action {
         case .search(let option):
-            task = self.search(with: option)
-                .receive(on: DispatchQueue.main)
-                .catchToEffect(Action.setReposiries(result:))
+            task = .publisher { // EffectTask를 생성하는 3가지 방법중 하나
+                self.search(with: option)
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.setRepositories)
+                    .assertNoFailure() // Failure가 Never여야 하므로 사용, 에러 처리에 대한 공부 필요.
+            }
             
         case .searchNextPage:
             let option = state.option.nextPage()
@@ -79,11 +82,8 @@ struct RepositoriesReducer: ReducerProtocol {
             state.queryParamMenu = option
             state.isSheetPresented = true
             
-        case .setReposiries(.success(let repositories)):
-            state.repositories = repositories
-            
-        case .setReposiries(.failure(let error)):
-            print(error)
+        case .setRepositories(let repos):
+            state.repositories = repos
             
         case .setReposiriesOption(.success(let res)):
             (state.repositories, state.option) = res
