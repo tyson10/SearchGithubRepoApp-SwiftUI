@@ -53,7 +53,7 @@ public struct SearchView<ResultView: SearchResultView>: View {
             .onChange(of: state.searchQueryStr,
                       perform: state.setMatchedQueries(with:))
             .onSubmit(of: .search, state.search)
-            // TODO: ViewBuilder 두번 호출되는 문제 수정 필요. pushActive가 false로 돌아오지 않기 때문. 다른 방식으로 push 필요.
+            // TODO: ViewBuilder 두번 호출되는 이유?
             .navigationDestination(isPresented: $state.pushActive) {
                 if state.pushActive {
                     resultViewMaker?(state.searchQueryStr)
