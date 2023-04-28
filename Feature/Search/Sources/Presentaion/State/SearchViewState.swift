@@ -22,6 +22,10 @@ final class SearchViewState: ObservableObject {
     @Published var matchedQueries: [String] = []
     @Published var pushActive = false
     
+    init() {
+        self.setMatchedQueries(with: self.searchQueryStr)
+    }
+    
     func search() {
         print("search!", searchQueryStr)
         pushActive = true

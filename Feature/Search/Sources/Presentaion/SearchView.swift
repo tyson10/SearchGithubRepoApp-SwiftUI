@@ -47,9 +47,6 @@ public struct SearchView<ResultView: SearchResultView>: View {
             }
             .searchable(text: $state.searchQueryStr,
                         prompt: "Search Repositories")
-            .onAppear {
-                state.setMatchedQueries(with: "")
-            }
             .onChange(of: state.searchQueryStr,
                       perform: state.setMatchedQueries(with:))
             .onSubmit(of: .search, state.search)
