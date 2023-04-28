@@ -45,10 +45,14 @@ public struct SearchView<ResultView: SearchResultView>: View {
                 }
                 .navigationTitle("Github")
             }
-            .searchable(text: $state.searchQueryStr,
-                        prompt: "Search Repositories")
-            .onChange(of: state.searchQueryStr,
-                      perform: state.setMatchedQueries(with:))
+            .searchable(
+                text: $state.searchQueryStr,
+                prompt: "Search Repositories"
+            )
+            .onChange(
+                of: state.searchQueryStr,
+                perform: state.setMatchedQueries(with:)
+            )
             .onSubmit(of: .search, state.search)
             // TODO: ViewBuilder 두번 호출되는 이유?
             .navigationDestination(isPresented: $state.pushActive) {
