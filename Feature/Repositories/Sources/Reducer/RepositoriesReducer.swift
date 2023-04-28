@@ -40,6 +40,7 @@ struct RepositoriesReducer: ReducerProtocol {
         case set(repos: Repositories, option: SearchOption)
         case append(repos: Repositories, option: SearchOption)
         case none
+        case handleError(Error)
     }
     
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -62,7 +63,7 @@ struct RepositoriesReducer: ReducerProtocol {
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.append(repos:option:))
-                    .assertNoFailure()
+                    .catch { Just(.handleError($0)) }
             }
             
         case .orderOptionChanged(let order):
@@ -73,7 +74,7 @@ struct RepositoriesReducer: ReducerProtocol {
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
-                    .assertNoFailure()
+                    .catch { Just(.handleError($0)) }
             }
             
         case .sortOptionChanged(let sort):
@@ -84,7 +85,7 @@ struct RepositoriesReducer: ReducerProtocol {
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
-                    .assertNoFailure()
+                    .catch { Just(.handleError($0)) }
             }
             
         case .optionBtnTapped:
@@ -104,6 +105,9 @@ struct RepositoriesReducer: ReducerProtocol {
         case let .append(repos: repos, option: option):
             state.repositories?.items.append(contentsOf: repos.items)
             state.option = option
+            
+        case let .handleError(error):
+            print("검색 에러: \(error)")
             
         default: break
         }
