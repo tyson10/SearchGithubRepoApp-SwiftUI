@@ -48,45 +48,45 @@ struct RepositoriesReducer: ReducerProtocol {
         
         switch action {
         case .search(let option):
-            task = .publisher { // EffectTask를 생성하는 3가지 방법중 하나.
+            task = .init(
                 search(with: option)
-                    .receive(on: DispatchQueue.main)
-                    .tryMap(Action.setRepos)
-                    .assertNoFailure() // Failure가 Never여야 하므로 사용, 에러 처리에 대한 공부 필요.
-            }
+                .receive(on: DispatchQueue.main)
+                .tryMap(Action.setRepos)
+                .catch { Just(.handleError($0)) }
+            )
             
         case .searchNextPage:
             let option = state.option.nextPage()
             
-            task = .publisher {
+            task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.append(repos:option:))
                     .catch { Just(.handleError($0)) }
-            }
+            )
             
         case .orderOptionChanged(let order):
             let option = state.option.set(order: order)
             
-            task = .publisher {
+            task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
                     .catch { Just(.handleError($0)) }
-            }
+            )
             
         case .sortOptionChanged(let sort):
             let option = state.option.set(sort: sort)
             
-            task = .publisher {
+            task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
                     .catch { Just(.handleError($0)) }
-            }
+            )
             
         case .optionBtnTapped:
             state.isActionSheetPresented.toggle()
