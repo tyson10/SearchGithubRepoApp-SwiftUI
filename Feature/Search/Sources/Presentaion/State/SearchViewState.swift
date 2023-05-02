@@ -17,9 +17,14 @@ final class SearchViewState: ObservableObject {
             setMatchedQueries(with: searchQueryStr)
         }
     }
+    // Published 변수들이 변경되면 ObservableObject 가 변경되었다고 인지하며 view를 업데이트함.
     @Published var searchQueryStr: String = ""
     @Published var matchedQueries: [String] = []
     @Published var pushActive = false
+    
+    init() {
+        self.setMatchedQueries(with: self.searchQueryStr)
+    }
     
     func search() {
         print("search!", searchQueryStr)

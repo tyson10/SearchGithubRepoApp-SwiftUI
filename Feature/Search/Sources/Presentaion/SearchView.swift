@@ -30,13 +30,14 @@ public struct SearchView<ResultView: SearchResultView>: View {
                         // 'id: \.self' 이 Element들의 해시값으로 구분하도록 함.
                         // 고로, Element는 Hashable이어야 한다.
                         ForEach(state.matchedQueries, id: \.self) { query in
-                            RecentSearchesContentView(
-                                value: query,
-                                deleteAction: state.delete(query:)
-                            )
-                            .onTapGesture {
+                            Button(action: {
                                 state.search(query: query)
-                            }
+                            }, label: {
+                                RecentSearchesContentView(
+                                    value: query,
+                                    deleteAction: state.delete(query:)
+                                )
+                            })
                         }
                     } header: {
                         RecentSearchesHeaderView(clearAction: state.removeAllQueries)
@@ -45,16 +46,20 @@ public struct SearchView<ResultView: SearchResultView>: View {
                 }
                 .navigationTitle("Github")
             }
-            .searchable(text: $state.searchQueryStr,
-                        prompt: "Search Repositories")
-            .onAppear {
-                state.setMatchedQueries(with: "")
-            }
-            .onChange(of: state.searchQueryStr,
-                      perform: state.setMatchedQueries(with:))
+            .searchable(
+                text: $state.searchQueryStr,
+                prompt: "Search Repositories"
+            )
+            .onChange(
+                of: state.searchQueryStr,
+                perform: state.setMatchedQueries(with:)
+            )
             .onSubmit(of: .search, state.search)
+            // TODO: ViewBuilder 두번 호출되는 이유?
             .navigationDestination(isPresented: $state.pushActive) {
-                resultViewMaker?(state.searchQueryStr)
+                if state.pushActive {
+                    resultViewMaker?(state.searchQueryStr)
+                }
             }
         }
     }

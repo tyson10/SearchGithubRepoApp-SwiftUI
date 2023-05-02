@@ -42,13 +42,16 @@ public struct RepositoriesView_TCA: SearchResultView {
             .navigationTitle(viewStore.option.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                
                 Button(action: { viewStore.send(.optionBtnTapped) },
                        label: {
                     Image(systemName: "ellipsis.circle")
                 })
                 .confirmationDialog("Search options",
-                                    isPresented: viewStore.binding(get: \.isActionSheetPresented, send: .optionBtnTapped),
+                                    isPresented: viewStore.binding(
+                                        get: \.isActionSheetPresented,
+                                        send: .optionBtnTapped
+                                    ),
+                                    titleVisibility: .visible,
                                     actions: {
                     Button("Sort") {
                         viewStore.send(.actionSheetBtnTapped(option: .sort))
@@ -56,45 +59,28 @@ public struct RepositoriesView_TCA: SearchResultView {
                     Button("Order") {
                         viewStore.send(.actionSheetBtnTapped(option: .order))
                     }
-                    Button("Cancel") { }
                 })
-//                .actionSheet(isPresented: viewStore.binding(get: \.isActionSheetPresented, send: .optionBtnTapped),
-//                             content: EmptyView())
             }
             .sheet(isPresented: viewStore.binding(get: \.isSheetPresented, send: .none)) {
                 switch viewStore.queryParamMenu {
                 case .sort:
-                    OptionView(options: SortParam.allCases,
-                               isPresented: viewStore.binding(get: \.isSheetPresented, send: .none),
-                               selectAction: { viewStore.send(.sortOptionChanged(type: $0)) })
+                    OptionView(
+                        options: SortParam.allCases,
+                        isPresented: viewStore.binding(get: \.isSheetPresented, send: .none),
+                        selectAction: { viewStore.send(.sortOptionChanged(type: $0)) }
+                    )
                 case .order:
-                    OptionView(options: OrderParam.allCases,
-                               isPresented: viewStore.binding(get: \.isSheetPresented, send: .none),
-                               selectAction: { viewStore.send(.orderOptionChanged(type: $0)) })
+                    OptionView(
+                        options: OrderParam.allCases,
+                        isPresented: viewStore.binding(get: \.isSheetPresented, send: .none),
+                        selectAction: { viewStore.send(.orderOptionChanged(type: $0)) }
+                    )
                 case .none:
                     EmptyView()
                 }
             }
         }
     }
-    
-    // TODO: Composable Architecture 에 actionSheet 액션 존재. 검토 및 적용 필요.
-//    private func actionSheet() -> ActionSheet {
-//        let title = Text("Search options")
-//        let sort = ActionSheet.Button.default(Text("Sort")) {
-//            self.state.actionSheetBtnTapped(option: .sort)
-//        }
-//        let order = ActionSheet.Button.default(Text("Order")) {
-//            self.state.actionSheetBtnTapped(option: .order)
-//        }
-//        let cancel = ActionSheet.Button.cancel(Text("Cancel"))
-//
-//        return .init(title: title, buttons: [sort, order, cancel])
-//    }
-//
-//    private func lastItemAppeared() {
-//        self.state.searchNextPage()
-//    }
 }
 
 struct RepositoriesView_TCA_Previews: PreviewProvider {

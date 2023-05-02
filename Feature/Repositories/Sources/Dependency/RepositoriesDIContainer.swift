@@ -23,4 +23,9 @@ public final class RepositoriesDIContainer {
     public func makeRepositoriesView(with query: String) -> RepositoriesView {
         return .init(networkService: networkService, searchWord: query)
     }
+    
+    public func makeRepositoriesView_TCA(with query: String) -> RepositoriesView_TCA {
+        print("makeRepositoriesView_TCA, \(query)")
+        return .init(networkService: networkService, searchWord: query)
+    }
 }

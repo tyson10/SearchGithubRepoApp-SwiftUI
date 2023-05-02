@@ -36,10 +36,11 @@ struct RepositoriesReducer: ReducerProtocol {
         case sortOptionChanged(type: SortParam)
         case optionBtnTapped
         case actionSheetBtnTapped(option: QueryParamMenu)
-        case setReposiries(result: Result<Repositories, Error>)
-        case setReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
-        case appendReposiriesOption(result: Result<(Repositories, SearchOption), Error>)
+        case setRepos(Repositories)
+        case set(repos: Repositories, option: SearchOption)
+        case append(repos: Repositories, option: SearchOption)
         case none
+        case handleError(Error)
     }
     
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
@@ -47,26 +48,45 @@ struct RepositoriesReducer: ReducerProtocol {
         
         switch action {
         case .search(let option):
-            task = self.search(with: option)
-                .catchToEffect(Action.setReposiries(result:))
+            task = .init(
+                search(with: option)
+                .receive(on: DispatchQueue.main)
+                .tryMap(Action.setRepos)
+                .catch { Just(.handleError($0)) }
+            )
             
         case .searchNextPage:
             let option = state.option.nextPage()
-            task = self.search(with: option)
-                .tryMap({ ($0, option) })
-                .catchToEffect(Action.appendReposiriesOption(result:))
+            
+            task = .init(
+                search(with: option)
+                    .tryMap({ ($0, option) })
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.append(repos:option:))
+                    .catch { Just(.handleError($0)) }
+            )
             
         case .orderOptionChanged(let order):
             let option = state.option.set(order: order)
-            task = self.search(with: option)
-                .tryMap({ ($0, option) })
-                .catchToEffect(Action.setReposiriesOption(result:))
+            
+            task = .init(
+                search(with: option)
+                    .tryMap({ ($0, option) })
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.set(repos:option:))
+                    .catch { Just(.handleError($0)) }
+            )
             
         case .sortOptionChanged(let sort):
             let option = state.option.set(sort: sort)
-            task = self.search(with: option)
-                .tryMap({ ($0, option) })
-                .catchToEffect(Action.setReposiriesOption(result:))
+            
+            task = .init(
+                search(with: option)
+                    .tryMap({ ($0, option) })
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.set(repos:option:))
+                    .catch { Just(.handleError($0)) }
+            )
             
         case .optionBtnTapped:
             state.isActionSheetPresented.toggle()
@@ -75,24 +95,20 @@ struct RepositoriesReducer: ReducerProtocol {
             state.queryParamMenu = option
             state.isSheetPresented = true
             
-        case .setReposiries(.success(let repositories)):
-            state.repositories = repositories
+        case .setRepos(let repos):
+            state.repositories = repos
             
-        case .setReposiries(.failure(let error)):
-            print(error)
+        case .set(repos: let repos, option: let option):
+            (state.repositories, state.option) = (repos, option)
+            state.isSheetPresented = false
             
-        case .setReposiriesOption(.success(let res)):
-            (state.repositories, state.option) = res
+        case let .append(repos: repos, option: option):
+            state.repositories?.items.append(contentsOf: repos.items)
+            state.option = option
             
-        case .setReposiriesOption(.failure(let error)):
-            print(error)
+        case let .handleError(error):
+            print("검색 에러: \(error)")
             
-        case .appendReposiriesOption(.success(let res)):
-            state.repositories?.items.append(contentsOf: res.0.items)
-            state.option = res.1
-            
-        case .appendReposiriesOption(.failure(let error)):
-            print(error)
         default: break
         }
         

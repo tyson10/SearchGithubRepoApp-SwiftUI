@@ -20,6 +20,7 @@ struct RecentSearchesContentView: View {
     var body: some View {
         HStack {
             Text(self.value)
+                .foregroundColor(.black)
             Spacer()
             Button(action: self.delete,
                    label: {

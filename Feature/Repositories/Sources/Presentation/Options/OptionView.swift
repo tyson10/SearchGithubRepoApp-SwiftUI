@@ -18,7 +18,7 @@ public struct OptionView<T: QueryParamType>: View {
     init(options: [T] = [],
          isPresented: Binding<Bool> = .constant(false),
          selectAction: ((T) -> Void)? = nil) {
-        self.options = options
+        self._options = .init(initialValue: options)
         self._isPresented = isPresented
         self.selectAction = selectAction
     }
@@ -26,12 +26,13 @@ public struct OptionView<T: QueryParamType>: View {
     public var body: some View {
         NavigationView {
             List(self.options) { option in
-                // FIXME: 텍스트가 있는 영역만 제스처 동작하는 문제 수정 필요.
-                Text(option.stringValue)
-                    .onTapGesture {
-                        self.selectAction?(option)
-                        self.isPresented = false
-                    }
+                Button(action: {
+                    self.selectAction?(option)
+                    self.isPresented = false
+                }, label: {
+                    Text(option.stringValue)
+                        .foregroundColor(.black)
+                })
             }
             .navigationTitle(T.title)
             .navigationBarTitleDisplayMode(.inline)
