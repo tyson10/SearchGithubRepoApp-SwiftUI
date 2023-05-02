@@ -50,9 +50,9 @@ struct RepositoriesReducer: ReducerProtocol {
         case .search(let option):
             task = .init(
                 search(with: option)
-                .receive(on: DispatchQueue.main)
-                .tryMap(Action.setRepos)
-                .catch { Just(.handleError($0)) }
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.setRepos)
+                    .catch { Just(.handleError($0)) }
             )
             
         case .searchNextPage:
