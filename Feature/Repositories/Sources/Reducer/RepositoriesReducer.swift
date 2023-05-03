@@ -50,6 +50,12 @@ struct RepositoriesReducer: ReducerProtocol {
         case .search(let option):
             task = .init(
                 search(with: option)
+                    .zip(self.langColor())
+                    .tryMap { repos, langColors in
+                        var repos = repos
+                        repos.merge(langColors: langColors)
+                        return repos
+                    }
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.setRepos)
                     .catch { Just(.handleError($0)) }
@@ -60,6 +66,12 @@ struct RepositoriesReducer: ReducerProtocol {
             
             task = .init(
                 search(with: option)
+                    .zip(self.langColor())
+                    .tryMap { repos, langColors in
+                        var repos = repos
+                        repos.merge(langColors: langColors)
+                        return repos
+                    }
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.append(repos:option:))
@@ -71,6 +83,12 @@ struct RepositoriesReducer: ReducerProtocol {
             
             task = .init(
                 search(with: option)
+                    .zip(self.langColor())
+                    .tryMap { repos, langColors in
+                        var repos = repos
+                        repos.merge(langColors: langColors)
+                        return repos
+                    }
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
@@ -82,6 +100,12 @@ struct RepositoriesReducer: ReducerProtocol {
             
             task = .init(
                 search(with: option)
+                    .zip(self.langColor())
+                    .tryMap { repos, langColors in
+                        var repos = repos
+                        repos.merge(langColors: langColors)
+                        return repos
+                    }
                     .tryMap({ ($0, option) })
                     .receive(on: DispatchQueue.main)
                     .tryMap(Action.set(repos:option:))
