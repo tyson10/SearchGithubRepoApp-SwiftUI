@@ -11,7 +11,7 @@ import Extensions
 
 public typealias LanguageColors = [String: LanguageColorValue]
 
-public struct LanguageColorValue: Codable {
+public struct LanguageColorValue: Codable, Hashable {
     let hexColor: String?
     let url: String
     
