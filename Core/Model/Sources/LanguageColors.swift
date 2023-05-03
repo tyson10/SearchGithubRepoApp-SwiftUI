@@ -25,17 +25,3 @@ public struct LanguageColorValue: Codable, Hashable {
         case url
     }
 }
-
-public final class LangColorPalette {
-    public static var shared = LangColorPalette()
-    private var colors = LanguageColors()
-    
-    public func set(colors: LanguageColors) {
-        self.colors = colors
-    }
-    
-    public func color(language: String?) -> Color? {
-        guard let lang = language else { return nil }
-        return self.colors[lang]?.color
-    }
-}
