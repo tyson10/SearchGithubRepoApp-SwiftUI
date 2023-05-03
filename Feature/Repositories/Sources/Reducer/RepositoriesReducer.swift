@@ -120,4 +120,10 @@ struct RepositoriesReducer: ReducerProtocol {
             .decode(type: Repositories.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
+    
+    private func langColor() -> AnyPublisher<LanguageColors, any Error> {
+        return self.networkService.request(endPoint: .langColor)
+            .decode(type: LanguageColors.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
 }
