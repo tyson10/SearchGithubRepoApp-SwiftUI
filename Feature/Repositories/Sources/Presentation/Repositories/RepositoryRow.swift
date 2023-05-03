@@ -28,12 +28,12 @@ struct RepositoryRow: View {
             )
             .font(.system(size: 11))
             
-            Text(self.repository.name)
+            Text(repository.name)
             
             Spacer()
                 .frame(height: 3)
             
-            Text(self.repository.description ?? "")
+            Text(repository.description ?? "")
                 .lineLimit(2)
                 .font(.system(size: 17))
             
@@ -41,17 +41,17 @@ struct RepositoryRow: View {
                 HStack(spacing: 2) {
                     Image(systemName: "star")
                     
-                    Text("\(self.repository.stargazersCount)")
+                    Text("\(repository.stargazersCount)")
                         .frame(maxHeight: 20)
                         .font(.system(size: 12))
                 }
                 
                 HStack(spacing: 2) {
-                    LangColorPalette.shared.color(language: self.repository.language)?
-                        .frame(width: self.langColorSize, height: self.langColorSize)
-                        .cornerRadius(self.langColorSize/2)
+                    repository.langColor?.color?
+                        .frame(width: langColorSize, height: langColorSize)
+                        .cornerRadius(langColorSize/2)
                     
-                    Text(self.repository.language ?? "")
+                    Text(repository.language ?? "")
                         .frame(maxHeight: 20)
                         .font(.system(size: 12))
                 }
