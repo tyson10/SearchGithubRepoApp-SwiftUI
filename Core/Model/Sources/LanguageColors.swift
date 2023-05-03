@@ -15,7 +15,7 @@ public struct LanguageColorValue: Codable, Hashable {
     let hexColor: String?
     let url: String
     
-    var color: Color? {
+    public var color: Color? {
         guard let hex = self.hexColor else { return nil }
         return .init(hex: hex)
     }
