@@ -50,9 +50,9 @@ struct RepositoriesReducer: ReducerProtocol {
         case .search(let option):
             task = .init(
                 search(with: option)
-                .receive(on: DispatchQueue.main)
-                .tryMap(Action.setRepos)
-                .catch { Just(.handleError($0)) }
+                    .receive(on: DispatchQueue.main)
+                    .tryMap(Action.setRepos)
+                    .catch { Just(.handleError($0)) }
             )
             
         case .searchNextPage:
@@ -116,8 +116,25 @@ struct RepositoriesReducer: ReducerProtocol {
     }
     
     private func search(with option: SearchOption) -> AnyPublisher<Repositories, any Error> {
+        return requestSearch(with: option)
+            .zip(requestLangColor())
+            .tryMap { repos, langColors in
+                var repos = repos
+                repos.merge(langColors: langColors)
+                return repos
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func requestSearch(with option: SearchOption) -> AnyPublisher<Repositories, any Error> {
         return self.networkService.request(endPoint: .search(option: option))
             .decode(type: Repositories.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
+    
+    private func requestLangColor() -> AnyPublisher<LanguageColors, any Error> {
+        return self.networkService.request(endPoint: .langColor)
+            .decode(type: LanguageColors.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
 }
