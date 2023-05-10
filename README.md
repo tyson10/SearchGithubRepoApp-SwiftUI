@@ -20,6 +20,20 @@
 ## 💥 Trouble Shooting
 ### Main thread checker에 의한 경고 발생
 `The "Store" class is not thread-safe, and so all interactions with an instance of "Store" (including all of its scopes and derived view stores) must be done on the main thread.`
+- `Store` 클래스가 thread-safe하지 않으므로 `Store`객체와 상호 작용을 위한 동작은 main thread에서 수행되어야 함.
+
+```swift
+var task: EffectTask<Action> = .none
+
+/// Action을 반환할 때 receive(on:) 함수로 메인 스케줄러에서 동작하도록 구현
+task = .init(
+    search(with: option)
+        .tryMap({ ($0, option) })
+        .receive(on: DispatchQueue.main)
+        .tryMap(Action.append(repos:option:))
+        .catch { Just(.handleError($0)) }
+)
+```
 
 ## 참고 자료
 - [ComposableArchitecture Docs](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture)
