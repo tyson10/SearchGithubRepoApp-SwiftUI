@@ -16,6 +16,7 @@ import Network
 
 struct RepositoriesReducer: ReducerProtocol {
     private let networkService: NetworkService
+    private var scheduler: some Scheduler = DispatchQueue.main
     
     public init(network: NetworkService) {
         self.networkService = network
@@ -50,7 +51,7 @@ struct RepositoriesReducer: ReducerProtocol {
         case .search(let option):
             task = .init(
                 search(with: option)
-                    .receive(on: DispatchQueue.main)
+                    .receive(on: scheduler)
                     .tryMap(Action.setRepos)
                     .catch { Just(.handleError($0)) }
             )
@@ -61,7 +62,7 @@ struct RepositoriesReducer: ReducerProtocol {
             task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
-                    .receive(on: DispatchQueue.main)
+                    .receive(on: scheduler)
                     .tryMap(Action.append(repos:option:))
                     .catch { Just(.handleError($0)) }
             )
@@ -72,7 +73,7 @@ struct RepositoriesReducer: ReducerProtocol {
             task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
-                    .receive(on: DispatchQueue.main)
+                    .receive(on: scheduler)
                     .tryMap(Action.set(repos:option:))
                     .catch { Just(.handleError($0)) }
             )
@@ -83,7 +84,7 @@ struct RepositoriesReducer: ReducerProtocol {
             task = .init(
                 search(with: option)
                     .tryMap({ ($0, option) })
-                    .receive(on: DispatchQueue.main)
+                    .receive(on: scheduler)
                     .tryMap(Action.set(repos:option:))
                     .catch { Just(.handleError($0)) }
             )
