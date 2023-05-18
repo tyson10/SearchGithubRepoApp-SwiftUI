@@ -40,6 +40,7 @@ public class ImageLoader: ObservableObject {
                 DispatchQueue.main.async {
                     guard let image = UIImage(data: data) else { return }
                     self?.image = image
+                    // 사실상 URLCache 적용으로 불필요함.
                     ImageCache.shared.set(forKey: urlString, image: image)
                 }
             }
