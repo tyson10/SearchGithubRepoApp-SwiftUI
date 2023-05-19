@@ -32,7 +32,7 @@ final public class NetworkService {
             return Fail(error: NetworkError.emptyRequest).eraseToAnyPublisher()
         }
         
-        var resultPublisher: AnyPublisher<Data, NetworkError>
+        var resultPublisher: ResultPublisher
         
         if let data = cache.cachedResponse(for: request)?.data {
             resultPublisher = cachedResultPublisher(with: data)
