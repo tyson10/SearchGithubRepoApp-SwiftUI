@@ -36,13 +36,16 @@ private extension EndPoint {
         switch self {
         case.search(let option):
             var urlComp = URLComponents(string: baseUrl.appending("/search/repositories"))!
-            let queryItemArray = option.toParameters().map {
-                URLQueryItem(name: $0.key, value: .init(describing: $0.value))
-            }
-            urlComp.queryItems = queryItemArray
+            
+            urlComp.queryItems = option.toParameters()
+                .sorted(by: { $0.key < $1.key })
+                .map { URLQueryItem(name: $0.key, value: .init(describing: $0.value)) }
+            
             return urlComp.url!
+            
         case .image(let url):
             return URL(string: url)
+            
         case .langColor:
             return URL(string: "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json")
         }

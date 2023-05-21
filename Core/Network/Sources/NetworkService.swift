@@ -10,28 +10,55 @@ import Foundation
 import Combine
 
 final public class NetworkService {
+    public typealias ResultPublisher = AnyPublisher<Data, NetworkError>
+    
     public static let baseUrl = "https://api.github.com"
     private let session: URLSession
+    private let cache: URLCache
     
-    public init(session: URLSession = .shared) {
+    public init(session: URLSession = .shared,
+                cache: URLCache = .shared
+    ) {
         self.session = session
+        self.cache = cache
     }
     
     deinit {
         session.invalidateAndCancel()
     }
     
-    public func request(endPoint: EndPoint) -> AnyPublisher<Data, NetworkError> {
+    public func request(endPoint: EndPoint) -> ResultPublisher {
         guard let request = endPoint.request else {
             return Fail(error: NetworkError.emptyRequest).eraseToAnyPublisher()
         }
         
+        var resultPublisher: ResultPublisher
+        
+        if let data = cache.cachedResponse(for: request)?.data {
+            resultPublisher = cachedResultPublisher(with: data)
+        } else {
+            resultPublisher = dataTaskPublisher(for: request)
+        }
+        
+        return resultPublisher
+    }
+    
+    private func cachedResultPublisher(with data: Data) -> ResultPublisher {
+        return Future<Data, NetworkError> { $0(.success(data)) }.eraseToAnyPublisher()
+    }
+    
+    private func dataTaskPublisher(for request: URLRequest) -> ResultPublisher {
         return session.dataTaskPublisher(for: request)
-            .tryMap { data, response -> Data in
+            .tryMap { [weak self] data, response -> Data in
                 guard let httpResponse = response as? HTTPURLResponse,
                       (200...299).contains(httpResponse.statusCode) else {
                     throw NetworkError.invalidRequest
                 }
+                
+                let cachedData = CachedURLResponse(response: response, data: data)
+                
+                self?.cache.storeCachedResponse(cachedData, for: request)
+                
                 return data
             }
             .mapError { error -> NetworkError in
