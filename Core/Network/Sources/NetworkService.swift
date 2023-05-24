@@ -10,7 +10,6 @@ import Foundation
 import Combine
 
 final public class NetworkService {
-    public typealias ResultPublisher = AnyPublisher<Data, NetworkError>
     
     public static let baseUrl = "https://api.github.com"
     private let session: URLSession
@@ -26,6 +25,11 @@ final public class NetworkService {
     deinit {
         session.invalidateAndCancel()
     }
+}
+
+// MARK: - Combine
+extension NetworkService {
+    public typealias ResultPublisher = AnyPublisher<Data, NetworkError>
     
     public func request(endPoint: EndPoint) -> ResultPublisher {
         guard let request = endPoint.request else {
