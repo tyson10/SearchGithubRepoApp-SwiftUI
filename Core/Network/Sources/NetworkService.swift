@@ -25,6 +25,15 @@ final public class NetworkService {
     deinit {
         session.invalidateAndCancel()
     }
+    
+    private func isValid(response: URLResponse?) -> Bool {
+        if let httpRes = response as? HTTPURLResponse,
+           (200...299).contains(httpRes.statusCode) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 // MARK: - CompletionHandler
@@ -52,8 +61,8 @@ extension NetworkService {
             completionHandler(decodedResult(with: data))
         } else {
             session.dataTask(with: request) { [weak self] data, response, error in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode),
+                guard let self = self,
+                      self.isValid(response: response),
                       let data = data, let response = response else {
                     completionHandler(.failure(.invalidRequest))
                     return
@@ -61,7 +70,7 @@ extension NetworkService {
                 
                 let cachedData = CachedURLResponse(response: response, data: data)
                 
-                self?.cache.storeCachedResponse(cachedData, for: request)
+                self.cache.storeCachedResponse(cachedData, for: request)
                 
                 completionHandler(decodedResult(with: data))
             }
@@ -93,8 +102,7 @@ extension NetworkService {
     private func data(for request: URLRequest) async throws -> Data {
         let (data, response) = try await session.data(for: request)
         
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
+        guard isValid(response: response) else {
             throw NetworkError.invalidRequest
         }
         
@@ -133,14 +141,14 @@ extension NetworkService {
     private func dataTaskPublisher(for request: URLRequest) -> ResultPublisher {
         return session.dataTaskPublisher(for: request)
             .tryMap { [weak self] data, response -> Data in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode) else {
+                guard let self = self,
+                      self.isValid(response: response) else {
                     throw NetworkError.invalidRequest
                 }
                 
                 let cachedData = CachedURLResponse(response: response, data: data)
                 
-                self?.cache.storeCachedResponse(cachedData, for: request)
+                self.cache.storeCachedResponse(cachedData, for: request)
                 
                 return data
             }
