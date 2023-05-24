@@ -27,6 +27,85 @@ final public class NetworkService {
     }
 }
 
+// MARK: - CompletionHandler
+extension NetworkService {
+    public func request<T: Decodable>(
+        endPoint: EndPoint,
+        completionHandler: @escaping (Result<T, NetworkError>) -> Void
+    ) {
+        func decodedResult(with data: Data) -> Result<T, NetworkError> {
+            do {
+                let decodedData = try JSONDecoder().decode(T.self, from: data)
+                return .success(decodedData)
+            } catch {
+                return .failure(.unknown(error: error))
+            }
+        }
+        
+        guard let request = endPoint.request else {
+            return completionHandler(.failure(.emptyRequest))
+        }
+        
+        let decoder = JSONDecoder()
+        
+        if let data = cache.cachedResponse(for: request)?.data {
+            completionHandler(decodedResult(with: data))
+        } else {
+            session.dataTask(with: request) { [weak self] data, response, error in
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode),
+                      let data = data, let response = response else {
+                    completionHandler(.failure(.invalidRequest))
+                    return
+                }
+                
+                let cachedData = CachedURLResponse(response: response, data: data)
+                
+                self?.cache.storeCachedResponse(cachedData, for: request)
+                
+                completionHandler(decodedResult(with: data))
+            }
+            .resume()
+        }
+    }
+}
+
+// MARK: - Async/await
+extension NetworkService {
+    public func request<T: Decodable>(endPoint: EndPoint) async throws -> T {
+        guard let request = endPoint.request else {
+            throw NetworkError.emptyRequest
+        }
+        
+        var resultData: Data
+        
+        if let data = cache.cachedResponse(for: request)?.data {
+            resultData = data
+        } else {
+            resultData = try await data(for: request)
+        }
+        
+        let decodedData = try JSONDecoder().decode(T.self, from: resultData)
+        
+        return decodedData
+    }
+    
+    private func data(for request: URLRequest) async throws -> Data {
+        let (data, response) = try await session.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidRequest
+        }
+        
+        let cachedData = CachedURLResponse(response: response, data: data)
+        
+        cache.storeCachedResponse(cachedData, for: request)
+        
+        return data
+    }
+}
+
 // MARK: - Combine
 extension NetworkService {
     public typealias ResultPublisher = AnyPublisher<Data, NetworkError>
