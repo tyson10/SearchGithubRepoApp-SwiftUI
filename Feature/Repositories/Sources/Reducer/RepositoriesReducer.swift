@@ -138,4 +138,5 @@ struct RepositoriesReducer: ReducerProtocol {
             .decode(type: LanguageColors.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
+    // TODO: search 와 langColor 요청을 async-let을 사용해서 구현해보기.
 }
