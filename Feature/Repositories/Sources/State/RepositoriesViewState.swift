@@ -31,8 +31,7 @@ final class RepositoriesViewState: ObservableObject {
 
 extension RepositoriesViewState {
     func search(option: SearchOption) {
-        self.networkService.request(endPoint: .search(option: option))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
+        self.requestSearchAndLangColor(with: option)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: self.setReposiries(with:))
             .store(in: &subscriptions)
@@ -41,8 +40,7 @@ extension RepositoriesViewState {
     func searchNextPage() {
         let option = self.option.nextPage()
         
-        self.networkService.request(endPoint: .search(option: option))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
+        self.requestSearchAndLangColor(with: option)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [weak self] in
@@ -55,8 +53,7 @@ extension RepositoriesViewState {
     func orderOptionChanged(with order: OrderParam) {
         let option = self.option.set(order: order)
         
-        self.networkService.request(endPoint: .search(option: option))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
+        self.requestSearchAndLangColor(with: option)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [weak self] in
@@ -69,8 +66,7 @@ extension RepositoriesViewState {
     func sortOptionChanged(with sort: SortParam) {
         let option = self.option.set(sort: sort)
         
-        self.networkService.request(endPoint: .search(option: option))
-            .decode(type: Repositories.self, decoder: JSONDecoder())
+        self.requestSearchAndLangColor(with: option)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [weak self] in
@@ -91,5 +87,28 @@ extension RepositoriesViewState {
     
     private func setReposiries(with result: Repositories) {
         self.repositories = result
+    }
+    
+    private func requestSearchAndLangColor(with option: SearchOption) -> AnyPublisher<Repositories, any Error> {
+        return requestSearch(with: option)
+            .zip(requestLangColor())
+            .tryMap { repos, langColors in
+                var repos = repos
+                repos.merge(langColors: langColors)
+                return repos
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func requestSearch(with option: SearchOption) -> AnyPublisher<Repositories, any Error> {
+        return self.networkService.request(endPoint: .search(option: option))
+            .decode(type: Repositories.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
+    
+    private func requestLangColor() -> AnyPublisher<LanguageColors, any Error> {
+        return self.networkService.request(endPoint: .langColor)
+            .decode(type: LanguageColors.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
     }
 }
