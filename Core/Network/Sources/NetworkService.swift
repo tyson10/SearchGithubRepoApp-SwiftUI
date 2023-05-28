@@ -40,7 +40,7 @@ final public class NetworkService {
 extension NetworkService {
     public func request<T: Decodable>(
         endPoint: EndPoint,
-        completionHandler: @escaping (Result<T, NetworkError>) -> Void
+        completion: @escaping (Result<T, NetworkError>) -> Void
     ) {
         func decodedResult(with data: Data) -> Result<T, NetworkError> {
             do {
@@ -52,19 +52,19 @@ extension NetworkService {
         }
         
         guard let request = endPoint.request else {
-            return completionHandler(.failure(.emptyRequest))
+            return completion(.failure(.emptyRequest))
         }
         
         let decoder = JSONDecoder()
         
         if let data = cache.cachedResponse(for: request)?.data {
-            completionHandler(decodedResult(with: data))
+            completion(decodedResult(with: data))
         } else {
             session.dataTask(with: request) { [weak self] data, response, error in
                 guard let self = self,
                       self.isValid(response: response),
                       let data = data, let response = response else {
-                    completionHandler(.failure(.invalidRequest))
+                    completion(.failure(.invalidRequest))
                     return
                 }
                 
@@ -72,7 +72,7 @@ extension NetworkService {
                 
                 self.cache.storeCachedResponse(cachedData, for: request)
                 
-                completionHandler(decodedResult(with: data))
+                completion(decodedResult(with: data))
             }
             .resume()
         }
