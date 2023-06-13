@@ -12,12 +12,8 @@ ex) 이미지를 Data로 다운로드한 뒤 해당 데이터로 UIImage를 생�
 
 - Async/Await가 등장하기 전에 클로저를 주입받아서 비동기 처리를 수행하는 방식이다.
 
-### 한계
-
-- github 저장소를 검색한 후 결과값을 print후 language에 따른 color 데이터를 다시 요청하는 동작을 수행한다.
-- escaping 클로저가 중첩되며 가독성이 낮은 코드가 작성된다.
-
 ```swift
+// github 저장소를 검색한 후 결과값을 print후 language에 따른 color 데이터를 다시 요청하는 동작을 수행한다.
 self.search(with: .init(name: "swift")) { result in
     switch result {
     case .success(let repositories):
@@ -46,6 +42,40 @@ private func getLangColor(
         self.networkService.request(endPoint: .langColor, completion: completion)
 }
 ```
+
+### 한계
+
+```swift
+func fetchPhoto(url: URL, completionHandler: @escaping (UIImage?, Error?) -> Void) {
+    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        if let error = error {
+                completionHandler(nil, error)
+        }
+
+        if let data = data, let httpResponse = response as? HTTPURLResponse,
+                httpResponse.statusCode = 200 {
+            DispatchQueue.main.async {
+                completionHandler(UIImage(data: data), nil) // UIImage가 nil일 수 있다.
+            }
+        } else {
+            completionHandler(nil, DogsError.invalidServerResponse()
+        }
+    }
+    task.resume()
+}
+```
+
+1. 제어 흐름이 복잡하다.
+    1. `resume()` 이 호출된 이후에 `{ data, response, error in …. }`클로저가 실행된다.
+    제어의 흐름이 아래 → 위 방향이 되어 부자연스럽다.
+    2. 서로 다른 실행 context에서 실행되는 경우 복잡해진다.
+        - 가장 바깥 레이어는 호출자의 스레드 or 큐에서 실행됨.
+        - URLSessionTask의 completionHanldler는 Session의 delegate queue에서 실행됨.
+        - 최종적인 completionHandler는 main queue에서 실행됨.
+2. 개발자가 CompletionHandler 호출을 하지 않아도 오류가 발생하지 않는다.
+    1. CompletionHandler가 항상 호출되어야 하나 이것은 전적으로 개발자에게 달려있다.
+    잠재적인 버그 가능성 상승.
+3. 가독성이 떨어진다.
 
 ## Async/Await 으로 CompletionHandler를 대체
 
@@ -86,7 +116,29 @@ private func data(for request: URLRequest) async throws -> Data {
 }
 ```
 
-- async/await 사용으로 가독성이 좋아졌다!
+### 개선된 점
+
+```swift
+func fetchPhoto(url: URL) async throws -> UIImage {
+    let (data, response) = try await URLSession.shared.data(from: url)
+
+    guard let httpResponse = response as? HTTPURLResponse,
+                    httpResponse.statusCode == 200 else {
+                throw DogsError.invalidServerResponse
+        }
+
+    guard let image = UIImage(data: data) else {
+        throw DogsError.unsupportedImage
+    }
+
+    return image
+}
+```
+
+1. 제어의 흐름이 위→아래의 방향으로 자연스럽다. 마치 동기 코드처럼!
+2. 동일한 Concurrency context에서 실행되어 스레딩 문제도 해결됐다.
+3. CompletionHandler의 경우 오류를 던지지 않아도 알 수 없는 문제가 존재했으나, async 함수에서 에러를 `throw`하게되어 처리가 간단하다.
+4. CompletionHandler를 항상 호출해야하는 단점이 없으므로 잠재적 버그 발생의 가능성이 낮아졌다.
 
 ### Continuation
 
