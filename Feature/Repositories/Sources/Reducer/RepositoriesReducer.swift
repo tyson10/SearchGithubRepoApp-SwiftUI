@@ -56,6 +56,13 @@ struct RepositoriesReducer: ReducerProtocol {
                     .catch { Just(.handleError($0)) }
             )
             
+            /// EffectTask.run 예제. Swift Concurrency와 함꼐 활용.
+//            task = .run(operation: {
+//                try await $0(.setRepos(search(with: option)))
+//            }, catch: { error, send in
+//                await send(.handleError(error))
+//            })
+            
         case .searchNextPage:
             let option = state.option.nextPage()
             
@@ -138,5 +145,19 @@ struct RepositoriesReducer: ReducerProtocol {
             .decode(type: LanguageColors.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
-    // TODO: search 와 langColor 요청을 async-let을 사용해서 구현해보기.
+}
+
+// MARK: async-let
+extension RepositoriesReducer {
+    private func search(with option: SearchOption) async throws -> Repositories {
+        // child task 생성하고 placeholder(colors)와 바인딩 후에 지나감. 실제 request는 child task 에서 수행됨.
+        async let colors: LanguageColors = networkService.request(endPoint: .langColor)
+        // child task 결과와 상관없이 parent task는 계속 실행됨.
+        var repos: Repositories = try await networkService.request(endPoint: .search(option: option))
+        
+        // child task의 colors 값이 필요하므로 child task가 완료될 떄까지 기다림.
+        repos.merge(langColors: try await colors)
+        
+        return repos
+    }
 }
