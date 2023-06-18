@@ -6,10 +6,10 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 
 extension Project {
-    public static func feature(name: String,
-                               products: [Product],
-                               dependencies: [TargetDependency],
-                               includeDemoApp: Bool = false) -> Project {
+    public static func create(name: String,
+                              products: [Product],
+                              dependencies: [TargetDependency],
+                              includeDemoApp: Bool = false) -> Project {
         let platform = Platform.iOS
         let infoPlist: [String: InfoPlist.Value] = [
             "CFBundleShortVersionString": "1.0",

@@ -8,6 +8,6 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.feature(name: "CommonUI",
-                              products: [.staticFramework],
-                              dependencies: [.Project.Core.network])
+let project = Project.create(name: "CommonUI",
+                             products: [.staticFramework],
+                             dependencies: [.Project.Core.network])

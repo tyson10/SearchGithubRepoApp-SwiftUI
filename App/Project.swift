@@ -8,9 +8,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.feature(name: "App",
-                              products: [.app, .unitTests, .uiTests],
-                              dependencies: [
+let project = Project.create(name: "App",
+                             products: [.app, .unitTests, .uiTests],
+                             dependencies: [
                                 .Project.Feature.search,
                                 .Project.Feature.repositories
-                              ])
+                             ])
