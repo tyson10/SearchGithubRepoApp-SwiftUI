@@ -2,6 +2,7 @@
 
 - [Async/Await](AsyncAwait.md)
 - [AsyncSequence](AsyncSequence.md)
+- [Structured Concurrency](StructuredConcurrency.md)
 
 ## Swift Concurrency의 등장 배경
 
