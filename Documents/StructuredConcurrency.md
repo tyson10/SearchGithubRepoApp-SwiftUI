@@ -171,3 +171,37 @@ Task Tree는 parent task와 child task들간의 링크로 이루어진다.
 ## ****Cancellation is cooperative****
 
 - Task가 취소돼도 자동으로 동작이 끝나지 않고 매번 체크해줘야 되는것처럼 설명돼있는데 확인 필요..
+- 비동기인지 여부와 상관없이 현재 작업의 취소상태를 알 수 있다.
+이는, 작업이 취소될 것을 염두에 두고 API를 구현해야 함을 뜻한다.
+
+### 예제
+
+```swift
+func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
+    var thumbnails: [String: UIImage] = [:]
+    for id in ids {
+        try Task.checkCancellation()
+        thumbnails[id] = try await fetchOneThumbnail(withID: id)
+    }
+    return thumbnails
+}
+```
+
+작업이 취소되었다면 굳이 불필요한 thumbnail을 만들어 반환할 이유가 없다. `Task.checkCancellation()`을 호출하여 루프의 시작마다 작업의 취소를 확인한다.
+
+`Task.checkCancellation()` 함수는 작업이 취소됐을때만 에러를 반환한다.
+
+```swift
+func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
+    var thumbnails: [String: UIImage] = [:]
+    for id in ids {
+        if Task.isCancelled { break }
+        thumbnails[id] = try await fetchOneThumbnail(withID: id)
+    }
+    return thumbnails
+}
+```
+
+`Task.isCancelled`를 호출해서 작업 취소여부를 `Bool`값으로 가져올 수도 있다.
+
+이 작업을 수행할 때는 API가 부분적인 결과를 반환할수도 있음을 명시해야한다. 그렇지 않으면 심각한 오류를 마주할 수도 있다.
