@@ -8,10 +8,10 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.feature(name: "Repositories",
-                              products: [.staticFramework, .unitTests, .uiTests],
-                              dependencies: [
+let project = Project.create(name: "Repositories",
+                             products: [.staticFramework, .unitTests, .uiTests],
+                             dependencies: [
                                 .Project.Common.ui,
                                 .ThirdParty.composableArchitecture
-                              ],
-                              includeDemoApp: true)
+                             ],
+                             includeDemoApp: true)
