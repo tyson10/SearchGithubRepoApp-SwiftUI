@@ -205,3 +205,57 @@ func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
 `Task.isCancelled`를 호출해서 작업 취소여부를 `Bool`값으로 가져올 수도 있다.
 
 이 작업을 수행할 때는 API가 부분적인 결과를 반환할수도 있음을 명시해야한다. 그렇지 않으면 심각한 오류를 마주할 수도 있다.
+
+## Group Task
+
+### await의 한계
+
+```swift
+func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
+    var thumbnails: [String: UIImage] = [:]
+    for id in ids {
+        thumbnails[id] = try await fetchOneThumbnail(withId: id)
+    }
+    return thumbnails
+}
+
+func fetchOneThumbnail(withID id: String) async throws -> UIImage {
+    // ...
+
+    async let (data, _) = URLSession.shared.data(for: imageReq)
+    async let (metadata, _) = URLSession.shared.data(for: metadataReq)
+
+    // ...
+}
+```
+
+- `fetchThumbnails`의 반복문내에서 `fetchOneThumbnail`을 호출하며 2개의 child task를 생성하게 되는데, 이 2개의 child task가 완료되어야 반복문의 다음 Task가 수행된다.
+→ loop 한 번에 한 개의 썸네일만 가져올 수 있다.
+
+### 다
+
+- 다수의 작업을 동시에 사용하기 위한 개념이 TaskGroup이다.
+정확히는, 동적인 양의 동시성을 제공하기 위한 개념이 Task Group이다.
+
+```swift
+func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
+    var thumbnails: [String: UIImage] = [:]
+    try await withThrowingTaskGroup(of: Void.self) { group in
+        for id in ids {
+            group.addTask {
+                thumbnails[id] = try await fetchOneThumbnail(withID: id)
+            }
+        }
+    }
+    return thumbnails
+}
+```
+
+- `withThrowingTaskGroup`을 통해서 다수의 동시성의 제공을 위한 Scope를 제공한다.
+- `addTask` 함수로 비동기 Task를 전달하고, 해당 Task는 순서와 상관없이 즉시 실행된다.
+- Task Group내의 모든 child task가 끝날때까지 암시적으로 기다린다.
+
+### 문제점
+
+- 각 child task에서 하나의 Dictionary에 데이터를 넣게 되는데, Dictionary는 한 번에 두 개 이상의 Task를 처리할 수 없으므로 충돌 또는 데이터 손상의 위험성이 있다.
+
