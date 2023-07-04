@@ -232,7 +232,7 @@ func fetchOneThumbnail(withID id: String) async throws -> UIImage {
 - `fetchThumbnails`의 반복문내에서 `fetchOneThumbnail`을 호출하며 2개의 child task를 생성하게 되는데, 이 2개의 child task가 완료되어야 반복문의 다음 Task가 수행된다.
 → loop 한 번에 한 개의 썸네일만 가져올 수 있다.
 
-### 다
+### 다수의 작업을 동시에 수행하려면?
 
 - 다수의 작업을 동시에 사용하기 위한 개념이 TaskGroup이다.
 정확히는, 동적인 양의 동시성을 제공하기 위한 개념이 Task Group이다.
