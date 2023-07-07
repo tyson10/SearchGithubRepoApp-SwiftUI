@@ -259,3 +259,39 @@ func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
 
 - 각 child task에서 하나의 Dictionary에 데이터를 넣게 되는데, Dictionary는 한 번에 두 개 이상의 Task를 처리할 수 없으므로 충돌 또는 데이터 손상의 위험성이 있다.
 
+## Data-race safety
+
+- Data race를 막기 위해서 `@Sendable` 클로저를 사용한다.
+`@Sendable` 클로저는 변경이 가능한 변수(Reference type 변수등의 `Sendable` 프로토콜을 만족하지 못하는 변수)를 클로저 내부에서 캡처하지 못하도록 제한된 클로저이다.
+
+```swift
+func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
+    var thumbnails: [String: UIImage] = [:]
+    try await withThrowingTaskGroup(of: (String, UIImage).self) { group in
+        for id in ids {
+            group.addTask {
+                return (id, try await fetchOneThumbnail(withID: id))
+            }
+        }
+        for try await (id, thumbnail) in group {
+            thumbnails[id] = thumbnail
+        }
+        
+    }
+    return thumbnails
+}
+```
+
+- `withThrowingTaskGroup` 함수의 `ChildTaskResult`의 타입을 id와 image의 튜플로 설정하고,  `addTask` 에서 실제 `ChildTaskResult`를 반환하는 클로저를 선언한다.
+- parent Task는 새로운 `for-await` 루프를 사용하여 각 child Task의 결과를 반복하며, 완료된 순서대로 child Task에서 결과를 가져온다.
+결과적으로, 해당 루프는 순차적으로 실행되며 Task는 Data race로 부터 안전하다.
+
+`for-await` 루프는 완료된 순서대로 `child Task`에서 결과를 가져옵니다.
+
+### async-let 과 비교
+
+- 공통점
+    - `group`의 결과를 반환할 때 오류가 발생한 child task를 만나면 `group`내의 모든 Task는 암시적으로 취소된다.
+- 차이점
+    - `async-let`의 경우 동적으로 Task를 추가하지 못한다.
+    - `TaskGroup`은 `cancelAll()`과 같은 함수로 추가된 Task들을 외부에서 취소할 수도 있다.
