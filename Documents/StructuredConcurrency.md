@@ -295,3 +295,40 @@ func fetchThumbnails(for ids: [String]) async throws -> [String: UIImage] {
 - 차이점
     - `async-let`의 경우 동적으로 Task를 추가하지 못한다.
     - `TaskGroup`은 `cancelAll()`과 같은 함수로 추가된 Task들을 외부에서 취소할 수도 있다.
+
+## 모든 Task가 구조화된 패턴에 적당 하지는 않다
+
+- 비동기 코드가 아닌 경우 parent Task가 존재하지 않을 수 있다.
+
+```swift
+@MainActor
+class MyDelegate: UICollectionViewDelegate {
+    func collectionView(_ view: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt item: IndexPath) {
+        let ids = getThumbnailIDs(for: item)
+        let thumbnails = await fetchThumbnails(for: ids)
+        display(thumbnails, in: cell)
+    }
+}
+```
+
+- UICollectionViewDelegate 의 함수는 비동기 함수가 아니므로 비동기 함수의 호출을 기다릴 수 없음.
+
+```swift
+@MainActor
+class MyDelegate: UICollectionViewDelegate {
+    func collectionView(_ view: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt item: IndexPath) {
+        let ids = getThumbnailIDs(for: item)
+        Task {
+            let thumbnails = await fetchThumbnails(for: ids)
+            display(thumbnails, in: cell)
+        }
+    }
+}
+```
+
+- 구조화 되지 않은 Task를 사용해야 함.
+- Task는 현재의 스레드에서 실행된다. 예제의 경우 메인 스레드에서 delegate 함수가 호출되므로 Task도 메인 스레드에서 실행된다.
