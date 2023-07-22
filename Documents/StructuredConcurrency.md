@@ -332,3 +332,31 @@ class MyDelegate: UICollectionViewDelegate {
 
 - 구조화 되지 않은 Task를 사용해야 함.
 - Task는 현재의 스레드에서 실행된다. 예제의 경우 메인 스레드에서 delegate 함수가 호출되므로 Task도 메인 스레드에서 실행된다.
+
+## Unstructured tasks
+
+- 직접 생성된 Task는 해당되는 context의 Actor를 상속한다.
+- 구조화된 Task에서는 자동으로 처리 됐을 취소, 오류등의 처리를 수동으로 해줘야 하며, 별도의 조치를 하지 않으면 Task의 결과를 기다리지 않는다.
+
+```swift
+@MainActor
+class MyDelegate: UICollectionViewDelegate {
+    var thumbnailTasks: [IndexPath: Task] = [:]
+    
+    func collectionView(_ view: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt item: IndexPath) {
+        let ids = getThumbnailIDs(for: item)
+        thumbnailTasks[item] = Task {
+            let thumbnails = await fetchThumbnails(for: ids)
+            display(thumbnails, in: cell)
+        }
+    }
+}
+```
+
+- CollectionView의 cell에 표시할 thumbnail을 가져오기 전에 해당 셀이 스크롤되어 넘어가 버리면 해당 Task를 (수동으로)취소해야 된다.
+취소를 위해서 Task를 `Dictionary`형태로 참조하는 방법을 사용할 수 있다.
+- MyDelegate는 MainActor에 바인딩 되어 있으므로, 메인스레드에서 수행되고 Task는 해당 클래스를 상속하므로 병렬로 수행되지 않는다.
+즉, `thumbnailTasks`는 Data race가 발생하지 않는 상태이다.
+- 필요시에 `thumbnailTasks`에서 취소가 필요한 Task에 대해 `cancel` 메소드를 호출할 수 있다.
