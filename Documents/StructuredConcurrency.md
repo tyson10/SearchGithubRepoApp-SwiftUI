@@ -360,3 +360,64 @@ class MyDelegate: UICollectionViewDelegate {
 - MyDelegate는 MainActor에 바인딩 되어 있으므로, 메인스레드에서 수행되고 Task는 해당 클래스를 상속하므로 병렬로 수행되지 않는다.
 즉, `thumbnailTasks`는 Data race가 발생하지 않는 상태이다.
 - 필요시에 `thumbnailTasks`에서 취소가 필요한 Task에 대해 `cancel` 메소드를 호출할 수 있다.
+
+
+## Detached tasks
+
+- Detached Task는 Context와 동일한 액터로 제한되지 않는다. Context와는 다른 다른 우선 순위를 부여할 수 있다.
+
+```swift
+@MainActor
+  class MyDelegate: UICollectionViewDelegate {
+      var thumbnailTasks: [IndexPath: Task] = [:]
+
+      func collectionView(_ view: UICollectionView,
+                          willDisplay cell: UICollectionViewCell,
+                          forItemAt item: IndexPath) {
+          let ids = getThumbnailIDs(for: item)
+          thumbnailTasks[item] = Task {
+              defer { thumbnailTasks[item] = nil }
+              let thumbnails = await fetchThumbnails(for: ids)
+              Task.detached(priority: .background) {
+                  writeToLocalCache(thumbnails)
+              }
+              display(thumbnails, in: cell)
+          }
+      }
+  }
+```
+
+### Task group in Detached Task
+
+- Detached Task 내부에서 Task group을 사용해서 구현할 수 있다.
+
+```swift
+@MainActor
+ class MyDelegate: UICollectionViewDelegate {
+     var thumbnailTasks: [IndexPath: Task] = [:]
+
+     func collectionView(_ view: UICollectionView,
+                         willDisplay cell: UICollectionViewCell,
+                         forItemAt item: IndexPath) {
+         let ids = getThumbnailIDs(for: item)
+         thumbnailTasks[item] = Task {
+             defer { thumbnailTasks[item] = nil }
+             let thumbnails = await fetchThumbnails(for: ids)
+             Task.detached(priority: .background) {
+                 writeTaskGroup(of: Void.self) { group in
+                     group.async { writeToLocalCache(thumbnails) }
+                     group.async { log(thumbnails) }
+                     group.async { ... }
+                 }
+             }
+             display(thumbnails, in: cell)
+         }
+     }
+ }
+```
+
+
+### 장점
+![untitled](Images/structured_concurrency_5.png)
+- background에서 동작하는 Task들을 취소해야 하는 경우 이미 Group task로 묶여 있으므로 최상위 Task(Detached Task)만 취소하면 모든 하위 작업이 취소된다.
+- child task가 자동으로 parent task의 우선순위를 상속하므로 편리하다.
