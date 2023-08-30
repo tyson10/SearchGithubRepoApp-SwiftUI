@@ -19,6 +19,8 @@ extension Project {
             ]
         var targets = [Target]()
         var schemes = [Scheme]()
+        // https://developer.apple.com/documentation/xcode/build-settings-reference 참조
+        let defaultSettings = Settings.settings(base: ["SWIFT_STRICT_CONCURRENCY": .string("complete")])
         
         products.forEach {
             var target: Target
@@ -32,7 +34,8 @@ extension Project {
                     infoPlist: .extendingDefault(with: infoPlist),
                     sources: ["Sources/**"],
                     resources: ["Resources/**"],
-                    dependencies: dependencies
+                    dependencies: dependencies,
+                    settings: defaultSettings
                 )
             case .unitTests:
                 target = Target(
@@ -44,7 +47,9 @@ extension Project {
                     sources: ["Tests/**"],
                     dependencies: [
                         .target(name: "\(name)")
-                ])
+                    ],
+                    settings: defaultSettings
+                )
             case .uiTests:
                 target = Target(
                     name: "\(name)UITests",
@@ -55,7 +60,9 @@ extension Project {
                     sources: ["UITests/**"],
                     dependencies: [
                         .target(name: "\(name)")
-                ])
+                    ],
+                    settings: defaultSettings
+                )
             case .framework, .staticFramework:
                 target = Target(
                     name: name,
@@ -65,7 +72,8 @@ extension Project {
                     infoPlist: .extendingDefault(with: infoPlist),
                     sources: ["Sources/**"],
                     resources: $0 == .framework ? ["Targets/\(name)/Resources/**"] : nil,
-                    dependencies: dependencies
+                    dependencies: dependencies,
+                    settings: defaultSettings
                 )
             case .dynamicLibrary, .staticLibrary:
                 target = Target(
@@ -76,7 +84,8 @@ extension Project {
                     infoPlist: .extendingDefault(with: infoPlist),
                     sources: ["Sources/**"],
                     resources: nil,
-                    dependencies: dependencies
+                    dependencies: dependencies,
+                    settings: defaultSettings
                 )
             default: return
             }
@@ -92,7 +101,8 @@ extension Project {
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["Sources/**"],
                 resources: ["Resources/**"],
-                dependencies: dependencies
+                dependencies: dependencies,
+                settings: defaultSettings
             )
             targets.append(target)
             
