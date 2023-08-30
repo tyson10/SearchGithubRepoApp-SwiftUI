@@ -4,6 +4,7 @@
 - [AsyncSequence](AsyncSequence.md)
 - [Structured Concurrency](StructuredConcurrency.md)
 - [Actor](Actor.md)
+- [Eliminate data races using Swift Concurrency](EliminateDataRaces.md)
 
 ## Swift Concurrency의 등장 배경
 
