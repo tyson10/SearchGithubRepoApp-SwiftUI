@@ -15,10 +15,29 @@
 
 ### GCD의 한계
 
+- 각 스레드가 data race를 유발할 위험이 있다.
 - Thread Explosion
     - Thread가 과도하게 많이 만들어지며 context switching이 너무 자주 일어나는 문제가 발생할 수 있다.
     ex) 1개의 코어에서 100개의 thread가 생성되면, 최소 100회의 context switching이 일어난다.
     - context switching은 오버헤드를 발생시켜 성능 저하의 원인이 된다.
+    - 하나의 큐에서 너무 오래 걸리는 작업을 하면 cpu의 한계로 다른 작업이 수행되지 않을 가능성이 있다.
+        
+        ```swift
+        func explodingCPU() {
+            let queue = DispatchQueue(label: "CPU_EXPLODED!", attributes: .concurrent)
+            
+            for n in 0..<1000 {
+                queue.async {
+                    print(Thread.current)
+                    while true { }
+                }
+            }
+        }
+        ```
+        
+        ![Untitled](Images/swift_concurrency_2.png)
+        
+        - 실제로 일부 print가 호출되지 않음.
 
 ### Swift Concurrency로 극복
 
